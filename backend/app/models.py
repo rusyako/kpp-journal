@@ -11,18 +11,32 @@ from sqlalchemy import (
     DateTime,
     Enum,
     ForeignKey,
+    Index,
     Integer,
+    MetaData,
     String,
     Text,
     Time,
     UniqueConstraint,
     func,
+    text,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
+from app import clock
+
 
 class Base(DeclarativeBase):
-    pass
+    # Имена ограничений нужны миграциям, чтобы их можно было потом менять и удалять
+    metadata = MetaData(
+        naming_convention={
+            "ix": "ix_%(column_0_label)s",
+            "uq": "uq_%(table_name)s_%(column_0_name)s",
+            "ck": "ck_%(table_name)s_%(constraint_name)s",
+            "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+            "pk": "pk_%(table_name)s",
+        }
+    )
 
 
 class AdvisoryKind(enum.StrEnum):
@@ -75,10 +89,26 @@ class User(Base):
     role: Mapped[Role] = mapped_column(Enum(Role, native_enum=False))
     display_name: Mapped[str] = mapped_column(String(200))
     email: Mapped[str | None] = mapped_column(String(200), unique=True)
+    # Вход по логину и паролю (охрана, админ; эдвайзер — запасной вход без Telegram)
+    username: Mapped[str | None] = mapped_column(String(100), unique=True)
+    password_hash: Mapped[str | None] = mapped_column(String(300))
     telegram_id: Mapped[int | None] = mapped_column(BigInteger, unique=True)
+    # Получает отчёт за день в Telegram (руководство)
+    receives_report: Mapped[bool] = mapped_column(Boolean, default=False)
     active: Mapped[bool] = mapped_column(Boolean, default=True)
 
     advisories: Mapped[list[Advisory]] = relationship(secondary="user_advisories")
+
+
+class Invite(Base):
+    """Одноразовый код для привязки Telegram: t.me/<бот>?start=<code>."""
+
+    __tablename__ = "invites"
+
+    code: Mapped[str] = mapped_column(String(64), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
 class UserAdvisory(Base):
@@ -115,7 +145,7 @@ class Permission(Base):
     reason: Mapped[str] = mapped_column(Text, default="")
     created_by: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+        DateTime(timezone=True), default=lambda: clock.now(), onupdate=lambda: clock.now()
     )
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
@@ -126,6 +156,17 @@ class Exit(Base):
     """Отметка «Вышел» на КПП. Ошибочная отметка не удаляется, а отменяется (Ф-10)."""
 
     __tablename__ = "exits"
+    # Одна действующая отметка на ученика в день, даже если два охранника нажали одновременно
+    __table_args__ = (
+        Index(
+            "uq_exits_active",
+            "date",
+            "student_id",
+            unique=True,
+            postgresql_where=text("cancelled_at IS NULL"),
+            sqlite_where=text("cancelled_at IS NULL"),
+        ),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     date: Mapped[date] = mapped_column(Date, index=True)
@@ -146,7 +187,7 @@ class AuditLog(Base):
     __tablename__ = "audit_log"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    ts: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), index=True)
+    ts: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: clock.now(), index=True)
     user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
     action: Mapped[str] = mapped_column(String(50))
     student_id: Mapped[int | None] = mapped_column(ForeignKey("students.id"))

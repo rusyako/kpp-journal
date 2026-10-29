@@ -2,7 +2,7 @@
 
 Revision ID: 0001
 Revises: 
-Create Date: 2026-10-29 10:23:15.975419
+Create Date: 2026-10-29 11:27:58.245254
 """
 from typing import Sequence, Union
 
@@ -24,25 +24,37 @@ def upgrade() -> None:
     sa.Column('kind', sa.Enum('PRIMARY', 'ALPHA', 'CDC', 'GROUP', name='advisorykind', native_enum=False), nullable=False),
     sa.Column('sort_order', sa.Integer(), nullable=False),
     sa.Column('active', sa.Boolean(), nullable=False),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('name')
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_advisories')),
+    sa.UniqueConstraint('name', name=op.f('uq_advisories_name'))
     )
     op.create_table('school_days',
     sa.Column('date', sa.Date(), nullable=False),
     sa.Column('is_working', sa.Boolean(), nullable=False),
     sa.Column('note', sa.String(length=200), nullable=True),
-    sa.PrimaryKeyConstraint('date')
+    sa.PrimaryKeyConstraint('date', name=op.f('pk_school_days'))
     )
     op.create_table('users',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('role', sa.Enum('ADMIN', 'GUARD', 'ADVISOR', 'VIEWER', name='role', native_enum=False), nullable=False),
     sa.Column('display_name', sa.String(length=200), nullable=False),
     sa.Column('email', sa.String(length=200), nullable=True),
+    sa.Column('username', sa.String(length=100), nullable=True),
+    sa.Column('password_hash', sa.String(length=300), nullable=True),
     sa.Column('telegram_id', sa.BigInteger(), nullable=True),
+    sa.Column('receives_report', sa.Boolean(), nullable=False),
     sa.Column('active', sa.Boolean(), nullable=False),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('email'),
-    sa.UniqueConstraint('telegram_id')
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_users')),
+    sa.UniqueConstraint('email', name=op.f('uq_users_email')),
+    sa.UniqueConstraint('telegram_id', name=op.f('uq_users_telegram_id')),
+    sa.UniqueConstraint('username', name=op.f('uq_users_username'))
+    )
+    op.create_table('invites',
+    sa.Column('code', sa.String(length=64), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('expires_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('used_at', sa.DateTime(timezone=True), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_invites_user_id_users')),
+    sa.PrimaryKeyConstraint('code', name=op.f('pk_invites'))
     )
     op.create_table('students',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -52,9 +64,9 @@ def upgrade() -> None:
     sa.Column('advisory_id', sa.Integer(), nullable=False),
     sa.Column('active', sa.Boolean(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
-    sa.ForeignKeyConstraint(['advisory_id'], ['advisories.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('full_name', 'class_name')
+    sa.ForeignKeyConstraint(['advisory_id'], ['advisories.id'], name=op.f('fk_students_advisory_id_advisories')),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_students')),
+    sa.UniqueConstraint('full_name', 'class_name', name=op.f('uq_students_full_name'))
     )
     with op.batch_alter_table('students', schema=None) as batch_op:
         batch_op.create_index(batch_op.f('ix_students_full_name_norm'), ['full_name_norm'], unique=False)
@@ -62,20 +74,20 @@ def upgrade() -> None:
     op.create_table('user_advisories',
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('advisory_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['advisory_id'], ['advisories.id'], ),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('user_id', 'advisory_id')
+    sa.ForeignKeyConstraint(['advisory_id'], ['advisories.id'], name=op.f('fk_user_advisories_advisory_id_advisories')),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_user_advisories_user_id_users')),
+    sa.PrimaryKeyConstraint('user_id', 'advisory_id', name=op.f('pk_user_advisories'))
     )
     op.create_table('audit_log',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('ts', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.Column('ts', sa.DateTime(timezone=True), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('action', sa.String(length=50), nullable=False),
     sa.Column('student_id', sa.Integer(), nullable=True),
     sa.Column('payload', sa.JSON(), nullable=False),
-    sa.ForeignKeyConstraint(['student_id'], ['students.id'], ),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.ForeignKeyConstraint(['student_id'], ['students.id'], name=op.f('fk_audit_log_student_id_students')),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_audit_log_user_id_users')),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_audit_log'))
     )
     with op.batch_alter_table('audit_log', schema=None) as batch_op:
         batch_op.create_index(batch_op.f('ix_audit_log_ts'), ['ts'], unique=False)
@@ -89,13 +101,14 @@ def upgrade() -> None:
     sa.Column('offline', sa.Boolean(), nullable=False),
     sa.Column('cancelled_at', sa.DateTime(timezone=True), nullable=True),
     sa.Column('cancelled_by', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['cancelled_by'], ['users.id'], ),
-    sa.ForeignKeyConstraint(['guard_id'], ['users.id'], ),
-    sa.ForeignKeyConstraint(['student_id'], ['students.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.ForeignKeyConstraint(['cancelled_by'], ['users.id'], name=op.f('fk_exits_cancelled_by_users')),
+    sa.ForeignKeyConstraint(['guard_id'], ['users.id'], name=op.f('fk_exits_guard_id_users')),
+    sa.ForeignKeyConstraint(['student_id'], ['students.id'], name=op.f('fk_exits_student_id_students')),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_exits'))
     )
     with op.batch_alter_table('exits', schema=None) as batch_op:
         batch_op.create_index(batch_op.f('ix_exits_date'), ['date'], unique=False)
+        batch_op.create_index('uq_exits_active', ['date', 'student_id'], unique=True, postgresql_where=sa.text('cancelled_at IS NULL'), sqlite_where=sa.text('cancelled_at IS NULL'))
 
     op.create_table('permissions',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -105,12 +118,12 @@ def upgrade() -> None:
     sa.Column('raw_time', sa.String(length=50), nullable=False),
     sa.Column('reason', sa.Text(), nullable=False),
     sa.Column('created_by', sa.Integer(), nullable=True),
-    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
     sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
-    sa.ForeignKeyConstraint(['created_by'], ['users.id'], ),
-    sa.ForeignKeyConstraint(['student_id'], ['students.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('date', 'student_id')
+    sa.ForeignKeyConstraint(['created_by'], ['users.id'], name=op.f('fk_permissions_created_by_users')),
+    sa.ForeignKeyConstraint(['student_id'], ['students.id'], name=op.f('fk_permissions_student_id_students')),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_permissions')),
+    sa.UniqueConstraint('date', 'student_id', name=op.f('uq_permissions_date'))
     )
     with op.batch_alter_table('permissions', schema=None) as batch_op:
         batch_op.create_index(batch_op.f('ix_permissions_date'), ['date'], unique=False)
@@ -125,6 +138,7 @@ def downgrade() -> None:
 
     op.drop_table('permissions')
     with op.batch_alter_table('exits', schema=None) as batch_op:
+        batch_op.drop_index('uq_exits_active', postgresql_where=sa.text('cancelled_at IS NULL'), sqlite_where=sa.text('cancelled_at IS NULL'))
         batch_op.drop_index(batch_op.f('ix_exits_date'))
 
     op.drop_table('exits')
@@ -137,6 +151,7 @@ def downgrade() -> None:
         batch_op.drop_index(batch_op.f('ix_students_full_name_norm'))
 
     op.drop_table('students')
+    op.drop_table('invites')
     op.drop_table('users')
     op.drop_table('school_days')
     op.drop_table('advisories')

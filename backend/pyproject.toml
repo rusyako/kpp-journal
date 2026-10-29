@@ -9,6 +9,14 @@ dependencies = [
     "openpyxl>=3.1",
     "psycopg[binary]>=3.2",
     "tzdata",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "itsdangerous>=2.2",
+    "python-multipart>=0.0.9",
+    "jinja2>=3.1",
+    "httpx>=0.27",
+    "apscheduler>=3.10,<4",
+    "aiogram>=3.13",
 ]
 
 [project.optional-dependencies]
@@ -21,5 +29,9 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools.packages.find]
 include = ["app*"]
 
+[tool.setuptools.package-data]
+app = ["templates/*.html"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]

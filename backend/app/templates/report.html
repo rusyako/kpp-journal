@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Отчёт КПП {{ report.date_label }}</title>
+<style>
+  body { font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; color: #1c1c1e; margin: 24px; max-width: 980px; }
+  h1 { font-size: 22px; margin: 0 0 16px; }
+  h2 { font-size: 16px; margin: 28px 0 8px; }
+  .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+  .tile { border: 1px solid #d9d9de; border-radius: 8px; padding: 10px 12px; }
+  .tile b { display: block; font-size: 24px; font-variant-numeric: tabular-nums; }
+  .tile span { color: #5c5c66; font-size: 13px; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #e6e6ea; vertical-align: top; }
+  th { font-weight: 600; color: #5c5c66; font-size: 12px; }
+  td.t { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .empty { color: #8a8a94; }
+  @media print { body { margin: 0; } h2 { break-after: avoid; } tr { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<h1>Отчёт КПП за {{ report.date_label }}</h1>
+<div class="summary">
+  <div class="tile"><b>{{ report.summary.total }}</b><span>Всего учеников</span></div>
+  <div class="tile"><b>{{ report.summary.exited }}</b><span>Вышли</span></div>
+  <div class="tile"><b>{{ report.summary.early }}</b><span>🟧 Раньше времени</span></div>
+  <div class="tile"><b>{{ report.summary.no_permission }}</b><span>⚠️ Без разрешения</span></div>
+  <div class="tile"><b>{{ report.summary.not_exited }}</b><span>Не вышли</span></div>
+  <div class="tile"><b>{{ report.summary.allowed_not_exited }}</b><span>🟨 С разрешением, но не вышли</span></div>
+</div>
+{% for lst in report.lists %}
+<h2>{{ lst.title }} — {{ lst.rows|length }}</h2>
+{% if lst.rows %}
+<table>
+  <thead><tr><th>ФИО</th><th>Класс</th><th>Эдвайзери</th><th>Разрешено</th><th>Вышел</th><th>Причина</th></tr></thead>
+  <tbody>
+  {% for r in lst.rows %}
+    <tr><td>{{ r.full_name }}</td><td>{{ r.class_name }}</td><td>{{ r.advisory }}</td>
+        <td class="t">{{ r.allowed_time }}</td><td class="t">{{ r.exit_time }}</td><td>{{ r.reason }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="empty">Нет</p>
+{% endif %}
+{% endfor %}
+</body>
+</html>
