@@ -7,5 +7,6 @@ __pycache__/
 .env
 node_modules/
 dist/
+deploy/backups/
 # Реальные списки учеников — персональные данные, в репозиторий не кладём
 data/

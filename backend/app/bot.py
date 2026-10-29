@@ -78,7 +78,9 @@ async def start(message: Message, command: CommandObject) -> None:
 
 async def run() -> None:
     if not config.TELEGRAM_BOT_TOKEN:
-        raise SystemExit("Не задан TELEGRAM_BOT_TOKEN")
+        # Не падаем, чтобы docker не перезапускал контейнер по кругу
+        log.warning("TELEGRAM_BOT_TOKEN не задан — бот не запущен")
+        await asyncio.Event().wait()
     bot = Bot(config.TELEGRAM_BOT_TOKEN)
     if MINI_APP_AVAILABLE:
         await bot.set_chat_menu_button(

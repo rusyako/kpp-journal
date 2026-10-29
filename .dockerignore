@@ -1,0 +1,9 @@
+.git
+**/node_modules
+**/dist
+**/__pycache__
+**/*.egg-info
+**/*.db
+**/.pytest_cache
+data
+deploy/.env

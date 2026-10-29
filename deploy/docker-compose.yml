@@ -1,0 +1,71 @@
+# Запуск на сервере:  cd deploy && cp .env.example .env && (заполнить .env) && docker compose up -d --build
+name: kpp
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: kpp
+      POSTGRES_USER: kpp
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?задайте POSTGRES_PASSWORD в .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kpp -d kpp"]
+      interval: 5s
+      retries: 20
+
+  api:
+    build: { context: .., dockerfile: Dockerfile }
+    image: kpp-journal:latest
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://kpp:${POSTGRES_PASSWORD}@db/kpp
+    depends_on:
+      db: { condition: service_healthy }
+    ports:
+      # Только для локальной проверки; снаружи сайт открывается через caddy
+      - "127.0.0.1:${API_PORT:-8000}:8000"
+
+  bot:
+    image: kpp-journal:latest
+    restart: unless-stopped
+    command: ["python", "-m", "app.bot"]
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://kpp:${POSTGRES_PASSWORD}@db/kpp
+    depends_on:
+      api: { condition: service_started }
+
+  caddy:
+    # HTTPS-сертификат Let's Encrypt выпускается автоматически для DOMAIN
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN:?задайте DOMAIN в .env}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    depends_on: [api]
+
+  backup:
+    # Ежедневный дамп БД, хранится 30 дней. Копируйте папку backups с сервера в другое место.
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./backups:/backups
+      - ./backup.sh:/backup.sh:ro
+    entrypoint: ["sh", "/backup.sh"]
+    depends_on:
+      db: { condition: service_healthy }
+
+volumes:
+  pgdata:
+  caddy_data:
