@@ -1,0 +1,25 @@
+[project]
+name = "kpp-journal"
+version = "0.1.0"
+description = "Электронный журнал выхода учеников через КПП"
+requires-python = ">=3.12"
+dependencies = [
+    "sqlalchemy>=2.0",
+    "alembic>=1.13",
+    "openpyxl>=3.1",
+    "psycopg[binary]>=3.2",
+    "tzdata",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

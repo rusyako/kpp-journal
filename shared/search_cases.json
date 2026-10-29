@@ -1,0 +1,50 @@
+{
+  "_comment": "Общие примеры поиска (Ф-5…Ф-7) для backend (pytest) и frontend (vitest). Имена вымышленные, повторяют форму сценария П-2.",
+  "students": [
+    {"id": 1, "full_name": "Ахметов Арман", "exited": false},
+    {"id": 2, "full_name": "Ахметова Дана", "exited": false},
+    {"id": 3, "full_name": "Ахметжанов Ерлан", "exited": false},
+    {"id": 4, "full_name": "Ахметкали Нұрлан", "exited": false},
+    {"id": 5, "full_name": "Ахметбек Айша", "exited": false},
+    {"id": 6, "full_name": "Ахметов Бекзат", "exited": false},
+    {"id": 7, "full_name": "Ахметова Алия", "exited": true},
+    {"id": 8, "full_name": "Ким Ахмед", "exited": false},
+    {"id": 9, "full_name": "Ким Илья", "exited": false},
+    {"id": 10, "full_name": "Ким Ирина", "exited": false},
+    {"id": 11, "full_name": "Ақтілекқызы Аружан", "exited": false},
+    {"id": 12, "full_name": "Ақтілеков Нұрсұлтан", "exited": false},
+    {"id": 13, "full_name": "Ақтілек Айша", "exited": false},
+    {"id": 14, "full_name": "Сейітов Ақтілек", "exited": false},
+    {"id": 15, "full_name": "Гарамов Ислам", "exited": false},
+    {"id": 16, "full_name": "Гарамова Дана", "exited": false},
+    {"id": 17, "full_name": "Гилёва Мария", "exited": false},
+    {"id": 18, "full_name": "Ма'руфов Азиз", "exited": false},
+    {"id": 19, "full_name": "Тастемиров Әлихан", "exited": false},
+    {"id": 20, "full_name": "Қали Аяулым", "exited": false}
+  ],
+  "cases": [
+    {
+      "query": "Ахме",
+      "names": ["Ахметбек Айша", "Ахметжанов Ерлан", "Ахметкали Нұрлан", "Ахметов Арман", "Ахметов Бекзат"],
+      "total": 8,
+      "hint": "Найдено больше 5 — введите больше букв"
+    },
+    {"query": "ким ил", "names": ["Ким Илья"], "total": 1, "hint": null},
+    {"query": "ИЛ КИМ", "names": ["Ким Илья"], "total": 1, "hint": null},
+    {
+      "query": "Актил",
+      "names": ["Ақтілек Айша", "Ақтілекқызы Аружан", "Ақтілеков Нұрсұлтан", "Сейітов Ақтілек"],
+      "total": 4,
+      "hint": null
+    },
+    {"query": "Гарам", "names": ["Гарамов Ислам", "Гарамова Дана"], "total": 2, "hint": null},
+    {"query": "ахметова", "names": ["Ахметова Дана", "Ахметова Алия"], "total": 2, "hint": null},
+    {"query": "нурсултан", "names": ["Ақтілеков Нұрсұлтан"], "total": 1, "hint": null},
+    {"query": "гилев", "names": ["Гилёва Мария"], "total": 1, "hint": null},
+    {"query": "маруф", "names": ["Ма'руфов Азиз"], "total": 1, "hint": null},
+    {"query": "кали", "names": ["Қали Аяулым"], "total": 1, "hint": null},
+    {"query": "ихан", "names": ["Тастемиров Әлихан"], "total": 1, "hint": null},
+    {"query": "zz", "names": [], "total": 0, "hint": "Никого не найдено"},
+    {"query": "а", "names": [], "total": 0, "hint": "Введите хотя бы 2 буквы"}
+  ]
+}
