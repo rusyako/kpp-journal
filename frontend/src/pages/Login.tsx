@@ -42,6 +42,34 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
       <button className="btn primary" disabled={busy || !username || !password}>
         Войти
       </button>
+      <section className="demo-logins" aria-labelledby="demo-logins-title">
+        <h3 id="demo-logins-title">Тестовые кабинеты</h3>
+        <div className="muted">Выберите кабинет, чтобы заполнить данные для входа.</div>
+        {[
+          ["admin", "Администратор"],
+          ["kpp", "Охрана КПП"],
+          ["kotiki", "Куратор: Котики"],
+          ["primary", "Куратор: 1A"],
+          ["director", "Руководство"],
+        ].map(([login, label]) => (
+          <button
+            key={login}
+            type="button"
+            className="btn demo-login"
+            disabled={busy}
+            onClick={() => {
+              setUsername(login);
+              setPassword("demo-pass-123");
+              setError("");
+            }}
+          >
+            <span>{label}</span>
+            <code>{login}</code>
+          </button>
+        ))}
+        <div>Пароль для всех: <code>demo-pass-123</code></div>
+        <small className="muted">Только для тестового стенда с загруженными демо-данными. Не используйте эти аккаунты для реальных данных.</small>
+      </section>
     </form>
   );
 }

@@ -26,8 +26,8 @@ services:
     depends_on:
       db: { condition: service_healthy }
     ports:
-      # Только для локальной проверки; снаружи сайт открывается через caddy
-      - "127.0.0.1:${API_PORT:-8000}:8000"
+      # По умолчанию только этот компьютер; API_BIND=0.0.0.0 открывает доступ из локальной сети
+      - "${API_BIND:-127.0.0.1}:${API_PORT:-8000}:8000"
 
   bot:
     image: kpp-journal:latest

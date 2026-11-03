@@ -77,11 +77,17 @@ function ImportCard({ onApplied }: { onApplied: () => void }) {
   const [result, setResult] = useState<ImportResult | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [confirmRemoved, setConfirmRemoved] = useState(false);
+  const removedCount = result?.diff.removed?.length ?? 0;
 
   const run = async (apply: boolean) => {
     if (!file) return;
     setBusy(true);
     setError("");
+    if (!apply) {
+      setResult(null);
+      setConfirmRemoved(false);
+    }
     const form = new FormData();
     form.append("file", file);
     form.append("apply", String(apply));
@@ -98,31 +104,47 @@ function ImportCard({ onApplied }: { onApplied: () => void }) {
 
   return (
     <div className="card" style={{ display: "grid", gap: 10 }}>
-      <b>Загрузить список из Excel</b>
-      <span className="muted">Файл .xlsx с листом «Для журнала»: ФИО | Класс | Эдвайзери. Сначала покажем изменения, потом примените.</span>
+      <h2 style={{ margin: 0, fontSize: 18 }}>Импорт учеников из Excel</h2>
+      <span className="muted">Загрузите весь список, например 400 детей, одним файлом .xlsx. Колонки должны идти в таком порядке:</span>
+      <div className="table-wrap">
+        <table className="list">
+          <thead>
+            <tr><th>ФИО</th><th>Группа (класс)</th><th>Эдвайзери</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Иванов Иван</td><td>8B</td><td>Mugiwaras</td></tr>
+            <tr><td>Петров Алексей</td><td>9A</td><td>Roman Empier</td></tr>
+            <tr><td>Сергеев Артём</td><td>4B</td><td>4B</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <span className="muted">Первая строка обязательно содержит заголовки, дети начинаются со второй строки. Используется лист «Для журнала», если он есть, иначе первый лист. Для 1–5 классов эдвайзери автоматически совпадает с классом.</span>
+      <div className="offline">Это обновление полного списка: дети, которых нет в файле, станут неактивными. Сначала проверьте количество учеников, пропущенные строки и изменения.</div>
       <div className="row">
-        <input
-          type="file"
-          accept=".xlsx"
-          onChange={(e) => {
-            setFile(e.target.files?.[0] ?? null);
-            setResult(null);
-          }}
-        />
+        <label className="field" style={{ minWidth: 0, maxWidth: "100%" }}>
+          <span>1. Выберите файл Excel</span>
+          <input
+            style={{ maxWidth: "100%" }}
+            type="file"
+            accept=".xlsx"
+            disabled={busy}
+            onChange={(e) => {
+              setFile(e.target.files?.[0] ?? null);
+              setResult(null);
+              setError("");
+              setConfirmRemoved(false);
+            }}
+          />
+        </label>
         <button className="btn" disabled={!file || busy} onClick={() => run(false)}>
-          Показать изменения
+          {busy ? "Обработка..." : "2. Проверить файл"}
         </button>
-        {result && !result.applied && !result.diff.empty && (
-          <button className="btn primary" disabled={busy} onClick={() => run(true)}>
-            Применить
-          </button>
-        )}
       </div>
       {error && <div className="error">{error}</div>}
       {result && (
         <div className="diff">
           <div>
-            {result.applied ? "✅ Применено. " : ""}Учеников в файле: {result.students}
+            {result.applied ? "Импорт завершён. " : "Предпросмотр, данные ещё не сохранены. "}Учеников в файле: {result.students}
             {result.diff.empty && " — изменений нет"}
           </div>
           {Object.entries(DIFF_TITLES).map(([key, title]) =>
@@ -141,7 +163,7 @@ function ImportCard({ onApplied }: { onApplied: () => void }) {
           )}
           {result.warnings.length > 0 && (
             <>
-              <h4>⚠️ Пропущенные строки: {result.warnings.length}</h4>
+              <h4>Пропущенные строки: {result.warnings.length}</h4>
               <ul>
                 {result.warnings.map((w) => (
                   <li key={w}>{w}</li>
@@ -150,6 +172,19 @@ function ImportCard({ onApplied }: { onApplied: () => void }) {
             </>
           )}
         </div>
+      )}
+      {result && !result.applied && !result.diff.empty && (
+        <>
+          {removedCount > 0 && (
+            <label className="row">
+              <input type="checkbox" checked={confirmRemoved} disabled={busy} onChange={(e) => setConfirmRemoved(e.target.checked)} />
+              Подтверждаю: ученики, отсутствующие в файле ({removedCount}), станут неактивными
+            </label>
+          )}
+          <button className="btn primary" disabled={busy || (removedCount > 0 && !confirmRemoved)} onClick={() => run(true)}>
+            {busy ? "Обработка..." : "3. Импортировать учеников"}
+          </button>
+        </>
       )}
     </div>
   );
