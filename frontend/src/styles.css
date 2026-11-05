@@ -361,8 +361,28 @@ table.list th {
 }
 .student-card .inputs {
   display: grid;
-  grid-template-columns: 92px 1fr;
-  gap: 6px;
+  grid-template-columns: minmax(140px, 180px) minmax(0, 1fr);
+  gap: 12px;
+}
+.student-card .field {
+  min-width: 0;
+}
+.student-card .input,
+.permission-actions .btn {
+  min-height: 48px;
+  font-size: 16px;
+}
+.student-card input[type="time"] {
+  min-width: 0;
+}
+.student-card textarea {
+  resize: vertical;
+}
+.permission-actions {
+  margin-top: 4px;
+}
+.permission-actions .muted {
+  font-size: 13px;
 }
 .student-card .status {
   font-size: 14px;
@@ -431,6 +451,19 @@ iframe.report {
 }
 
 @media (max-width: 600px) {
+  .student-card {
+    padding: 14px;
+    gap: 12px;
+  }
+  .student-card .inputs {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .permission-actions .btn {
+    flex: 1;
+  }
+  .permission-actions .muted {
+    flex-basis: 100%;
+  }
   .page {
     padding: 12px 12px 24px;
   }
