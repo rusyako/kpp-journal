@@ -21,5 +21,7 @@ COPY backend/alembic ./alembic
 COPY --from=web /src/frontend/dist ./static
 USER kpp
 EXPOSE 8000
-# Один воркер: в нём же работает расписание отчёта
-CMD ["sh", "-c", "alembic upgrade head && exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers --forwarded-allow-ips='*'"]
+# Один воркер: в нём же работает расписание отчёта.
+# FORWARDED_ALLOW_IPS — от кого верить заголовку X-Forwarded-For (настоящий IP клиента для лимита входа).
+# За туннелем на внешний сервер: FORWARDED_ALLOW_IPS=10.77.0.1, см. deploy/edge/README.md
+CMD ["sh", "-c", "alembic upgrade head && exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers --forwarded-allow-ips=\"${FORWARDED_ALLOW_IPS:-*}\""]

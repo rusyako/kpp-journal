@@ -1,0 +1,18 @@
+# /etc/wireguard/wg0.conf на ОСНОВНОМ сервере. Подключение идёт изнутри наружу:
+# в локальной сети ничего открывать не нужно, достаточно выхода в интернет по UDP 51820.
+[Interface]
+Address = 10.77.0.2/24
+PrivateKey = <содержимое local.key>
+# С внешнего сервера к самому основному серверу (SSH и прочее) по туннелю не попасть.
+# Порт API, опубликованный Docker, при этом работает: Docker пропускает его в обход INPUT.
+PostUp = iptables -I INPUT -i %i -j DROP; iptables -I INPUT -i %i -m state --state ESTABLISHED,RELATED -j ACCEPT; iptables -I INPUT -i %i -p icmp -j ACCEPT
+PostDown = iptables -D INPUT -i %i -j DROP; iptables -D INPUT -i %i -m state --state ESTABLISHED,RELATED -j ACCEPT; iptables -D INPUT -i %i -p icmp -j ACCEPT
+
+[Peer]
+# Внешний сервер
+PublicKey = <содержимое edge.pub>
+Endpoint = <белый IP внешнего сервера>:51820
+# В туннель уходит только трафик к внешнему серверу, интернет локальной сети идёт как раньше
+AllowedIPs = 10.77.0.1/32
+# Основной сервер за NAT: держим туннель открытым, иначе роутер его «забудет»
+PersistentKeepalive = 25

@@ -1,0 +1,29 @@
+# Внешний сервер: HTTPS для Mini App эдвайзеров. Данных здесь нет — всё уходит по туннелю на основной сервер.
+# Пропускаем только то, что нужно странице эдвайзера. Админка, КПП, отчёты и вход по паролю снаружи закрыты.
+{$DOMAIN} {
+	encode gzip
+
+	# API, нужное эдвайзеру
+	@advisor_api path /api/me /api/advisor/* /api/ws /api/health
+	handle @advisor_api {
+		reverse_proxy {$UPSTREAM}
+	}
+
+	# Остальное API (admin, day, exits, reports, audit, auth/login) — закрыто
+	handle /api/* {
+		respond "Not found" 404
+	}
+
+	# Страницы и сборка React (index.html, /assets, иконки) — данных в них нет
+	handle {
+		reverse_proxy {$UPSTREAM}
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options nosniff
+		Referrer-Policy same-origin
+		-Server
+	}
+	# Без X-Frame-Options: Telegram Web открывает Mini App во фрейме
+}

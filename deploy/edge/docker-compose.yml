@@ -1,0 +1,20 @@
+# Внешний сервер с белым IP. Запуск: cd deploy/edge && cp .env.example .env && (заполнить) && docker compose up -d
+# Сеть host: Caddy должен видеть интерфейс WireGuard (wg0) и адрес основного сервера 10.77.0.2.
+name: kpp-edge
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      DOMAIN: ${DOMAIN:?задайте DOMAIN в .env}
+      UPSTREAM: ${UPSTREAM:-10.77.0.2:8090}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:

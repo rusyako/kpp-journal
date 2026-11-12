@@ -1,0 +1,12 @@
+# /etc/wireguard/wg0.conf на ВНЕШНЕМ сервере (белый IP).
+# Ключи: wg genkey | tee edge.key | wg pubkey > edge.pub   (на каждом сервере свои)
+[Interface]
+Address = 10.77.0.1/24
+ListenPort = 51820
+PrivateKey = <содержимое edge.key>
+
+[Peer]
+# Основной сервер
+PublicKey = <содержимое local.pub>
+# Через туннель отсюда доступен только основной сервер, больше ничего
+AllowedIPs = 10.77.0.2/32
