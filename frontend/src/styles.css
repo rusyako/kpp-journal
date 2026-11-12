@@ -189,26 +189,6 @@ a {
   color: var(--danger);
 }
 
-.demo-logins {
-  display: grid;
-  gap: 8px;
-  border-top: 1px solid var(--border);
-  padding-top: 16px;
-  font-size: 14px;
-}
-.demo-logins h3 {
-  margin: 0;
-  font-size: 16px;
-}
-.demo-login {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  text-align: left;
-  white-space: normal;
-}
-
 /* ---------- Таблицы ---------- */
 .table-wrap {
   overflow-x: auto;
