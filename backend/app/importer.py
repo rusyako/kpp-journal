@@ -41,6 +41,14 @@ class StudentRow:
 class ParseResult:
     rows: list[StudentRow]
     warnings: list[str]
+    # Ошибки, при которых список загружать нельзя (например, два класса слились бы в один)
+    errors: list[str] = field(default_factory=list)
+
+
+def class_letter_source(text: str) -> str | None:
+    """Буква класса как она записана в файле («Б» в «5 б»), до перевода в латиницу."""
+    m = _GRADE_CLASS.match(clean_name(text))
+    return m[2].upper() if m else None
 
 
 @dataclass(frozen=True)
@@ -130,6 +138,8 @@ def parse_rows(raw_rows: Iterable[Sequence]) -> ParseResult:
     staged: list[tuple[str, str, str]] = []
     seen: set[tuple[str, str]] = set()
     group_variants: dict[str, Counter] = {}
+    # 5B ← какие буквы были в файле: «Б» и «В» кириллицей обе становятся B
+    letter_sources: dict[str, set[str]] = {}
 
     for line, raw in enumerate(raw_rows, start=2):  # строка 1 — заголовок
         cells = [("" if c is None else str(c)) for c in list(raw)[:3]]
@@ -146,6 +156,8 @@ def parse_rows(raw_rows: Iterable[Sequence]) -> ParseResult:
             warnings.append(f"Строка {line}: {full_name} ({class_name}) — повтор, пропущено")
             continue
         seen.add(key)
+        if (letter := class_letter_source(cells[1])) is not None:
+            letter_sources.setdefault(class_name, set()).add(letter)
 
         grade = class_grade(class_name)
         if grade is None or grade <= 5:
@@ -165,7 +177,14 @@ def parse_rows(raw_rows: Iterable[Sequence]) -> ParseResult:
         if class_grade(class_name) and class_grade(class_name) > 5:
             advisory = canonical[normalize(advisory)]
         rows.append(StudentRow(full_name, class_name, advisory))
-    return ParseResult(rows, warnings)
+
+    errors = [
+        f"Классы «{class_name[:-1]}Б» и «{class_name[:-1]}В» оба превратились бы в {class_name} "
+        f"и слились в один. Исправьте букву класса в файле (латиницей: A, B, C …)"
+        for class_name, letters in sorted(letter_sources.items())
+        if {"Б", "В"} <= letters
+    ]
+    return ParseResult(rows, warnings, errors)
 
 
 def read_xlsx(path: Path, sheet: str = SHEET_NAME) -> list[tuple]:
@@ -299,6 +318,10 @@ def main() -> None:
     parsed = parse_rows(read_xlsx(args.xlsx))
     for w in parsed.warnings:
         print("⚠️", w)
+    if parsed.errors:
+        for e in parsed.errors:
+            print("❌", e)
+        raise SystemExit("Список не загружен")
     print(f"Учеников в файле: {len(parsed.rows)}")
 
     with SessionLocal() as session:

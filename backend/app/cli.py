@@ -31,6 +31,7 @@ def create_admin(username: str, name: str) -> None:
             db.add(user)
         user.role, user.display_name, user.active = Role.ADMIN, name, True
         user.password_hash = hash_password(password)
+        user.revoke_sessions()
         db.commit()
     print(f"✅ Администратор {username} готов")
 

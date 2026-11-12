@@ -378,6 +378,7 @@ function UserForm({ user, advisories, onDone }: { user: User | null; advisories:
     receives_report: user?.receives_report ?? false,
     active: user?.active ?? true,
     unlink_telegram: false,
+    revoke_sessions: false,
   });
   const [error, setError] = useState("");
   const set = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => setForm({ ...form, [key]: value });
@@ -457,6 +458,12 @@ function UserForm({ user, advisories, onDone }: { user: User | null; advisories:
           <label className="row" style={{ gap: 4 }}>
             <input type="checkbox" checked={form.unlink_telegram} onChange={(e) => set("unlink_telegram", e.target.checked)} />
             Отвязать Telegram
+          </label>
+        )}
+        {user?.has_password && (
+          <label className="row" style={{ gap: 4 }} title="Смена пароля тоже завершает все сеансы">
+            <input type="checkbox" checked={form.revoke_sessions} onChange={(e) => set("revoke_sessions", e.target.checked)} />
+            Завершить все сеансы (выйти на всех компьютерах)
           </label>
         )}
       </div>

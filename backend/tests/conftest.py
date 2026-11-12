@@ -3,6 +3,7 @@ import os
 os.environ.setdefault("SCHEDULER_ENABLED", "0")
 os.environ.setdefault("COOKIE_SECURE", "0")
 os.environ.setdefault("STATIC_DIR", "/nonexistent")
+os.environ.setdefault("SECRET_KEY", "test-secret-key-for-pytest-only-0123456789")
 
 from datetime import datetime  # noqa: E402
 
@@ -18,6 +19,7 @@ from app.events import hub  # noqa: E402
 from app.importer import StudentRow, apply_import  # noqa: E402
 from app.main import app  # noqa: E402
 from app.models import Advisory, Base, Role, Student, User  # noqa: E402
+from app.services import login_limit  # noqa: E402
 from app.services.auth import hash_password  # noqa: E402
 
 PASSWORD = "test-pass-123"
@@ -65,6 +67,7 @@ def db(monkeypatch, now, sent):
     factory = sessionmaker(engine, expire_on_commit=False)
     monkeypatch.setattr(database, "SessionLocal", factory)
     monkeypatch.setattr(hub, "_loop", None)
+    login_limit.reset()
 
     with factory() as s:
         apply_import(s, STUDENTS)

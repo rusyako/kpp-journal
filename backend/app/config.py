@@ -7,8 +7,22 @@ SCHOOL_TZ = ZoneInfo("Asia/Qyzylorda")
 
 DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///./kpp.db")
 
-# Подпись cookie сессии. В продакшене обязательно задать своё значение.
-SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-change-me")
+# Подпись cookie сессии. Без своего длинного значения API не запустится:
+# зная ключ, любой может подделать cookie и войти администратором.
+_DEV_SECRET = "dev-secret-change-me"
+SECRET_KEY = os.environ.get("SECRET_KEY", "").strip()
+MIN_SECRET_LENGTH = 32
+
+
+def secret_key_problem() -> str | None:
+    """Почему SECRET_KEY нельзя использовать, или None, если с ним всё в порядке."""
+    if not SECRET_KEY:
+        return "SECRET_KEY не задан"
+    if SECRET_KEY == _DEV_SECRET:
+        return "SECRET_KEY равен значению из примера"
+    if len(SECRET_KEY) < MIN_SECRET_LENGTH:
+        return f"SECRET_KEY короче {MIN_SECRET_LENGTH} символов"
+    return None
 SESSION_DAYS = int(os.environ.get("SESSION_DAYS", "30"))
 # Cookie только по HTTPS; локально без TLS выключить: COOKIE_SECURE=0
 COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "1") == "1"

@@ -183,7 +183,7 @@ def test_p11_report(db, guard, advisor, admin, now, sent):
 
     report = admin.get(f"/api/reports/{now.value.date().isoformat()}").json()
     assert report["summary"] == {
-        "total": 6, "exited": 3, "early": 1, "no_permission": 1, "not_exited": 3, "allowed_not_exited": 1,
+        "total": 6, "exited": 3, "early": 1, "no_permission": 1, "allowed_not_exited": 1,
     }
     lists = {lst["key"]: [r["full_name"] for r in lst["rows"]] for lst in report["lists"]}
     assert lists == {
@@ -195,11 +195,15 @@ def test_p11_report(db, guard, advisor, admin, now, sent):
     }
     html = admin.get(f"/api/reports/{now.value.date().isoformat()}/html").text
     assert "Отчёт КПП за 29.10.2026" in html and "кружок" in html
+    assert "<span>Не вышли</span>" not in html
+    assert "С разрешением, но не вышли" in html
 
     sent.clear()
     r = admin.post(f"/api/admin/reports/{now.value.date().isoformat()}/send")
     assert r.json()["telegram"] == 1
     assert sent[0][0] == 2001 and "Раньше времени: 1" in sent[0][1]
+    assert "\nНе вышли:" not in sent[0][1]
+    assert "С разрешением, но не вышли: 1" in sent[0][1]
 
 
 def _init_data(user_id: int, token: str) -> str:

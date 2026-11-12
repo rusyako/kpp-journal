@@ -23,10 +23,11 @@ export function useLiveUpdates(onChange: () => void): void {
 
     const connect = () => {
       const proto = location.protocol === "https:" ? "wss" : "ws";
-      const tg = initData();
-      const qs = tg ? `?tg=${encodeURIComponent(tg)}` : "";
-      ws = new WebSocket(`${proto}://${location.host}/api/ws${qs}`);
+      ws = new WebSocket(`${proto}://${location.host}/api/ws`);
       ws.onopen = () => {
+        // Mini App входит первым сообщением, а не через адрес: адреса пишутся в журналы сервера
+        const tg = initData();
+        if (tg) ws?.send(`auth:${tg}`);
         retry = 1000;
         fire(); // могли пропустить события, пока не было связи
         ping = window.setInterval(() => ws?.readyState === WebSocket.OPEN && ws.send("ping"), 25000);
