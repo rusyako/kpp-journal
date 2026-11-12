@@ -105,19 +105,12 @@ function ImportCard({ onApplied }: { onApplied: () => void }) {
   return (
     <div className="card" style={{ display: "grid", gap: 10 }}>
       <h2 style={{ margin: 0, fontSize: 18 }}>Импорт учеников из Excel</h2>
-      <span className="muted">Загрузите весь список, например 400 детей, одним файлом .xlsx. Колонки должны идти в таком порядке:</span>
-      <div className="table-wrap">
-        <table className="list">
-          <thead>
-            <tr><th>ФИО</th><th>Группа (класс)</th><th>Эдвайзери</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Иванов Иван</td><td>8B</td><td>Mugiwaras</td></tr>
-            <tr><td>Петров Алексей</td><td>9A</td><td>Roman Empier</td></tr>
-            <tr><td>Сергеев Артём</td><td>4B</td><td>4B</td></tr>
-          </tbody>
-        </table>
-      </div>
+      <span className="muted">Подготовьте полный список учеников в файле .xlsx: один ученик на строку, три колонки в следующем порядке.</span>
+      <ol style={{ margin: 0, paddingLeft: 24 }}>
+        <li><b>ФИО:</b> полное имя ученика.</li>
+        <li><b>Группа (класс):</b> номер класса и его буква.</li>
+        <li><b>Эдвайзери:</b> название эдвайзери, к которой относится ученик.</li>
+      </ol>
       <span className="muted">Первая строка обязательно содержит заголовки, дети начинаются со второй строки. Используется лист «Для журнала», если он есть, иначе первый лист. Для 1–5 классов эдвайзери автоматически совпадает с классом.</span>
       <div className="offline">Это обновление полного списка: дети, которых нет в файле, станут неактивными. Сначала проверьте количество учеников, пропущенные строки и изменения.</div>
       <div className="row">
