@@ -1,0 +1,217 @@
+[
+  {
+    "out": "01_access_control_event_types",
+    "source_file": "ISAPI/Country and Region Code (1).pdf",
+    "real_content": "Access Control Event Types and Event Linkage Types",
+    "kind": "pdf",
+    "sha256": "3c0c62995179eed4dd55c66d14f9cdafa6db3b47816d45b754b962bfc9a777f0",
+    "files": [
+      {
+        "file": "01_access_control_event_types.md",
+        "pages": "1-31",
+        "chars": 90362
+      }
+    ],
+    "errors": []
+  },
+  {
+    "out": "02_country_region_code",
+    "source_file": "ISAPI/ErrorCode (1).xlsx",
+    "real_content": "Country/Region Code",
+    "kind": "pdf",
+    "sha256": "62a0ae410bff1598399302caac40bdadeea30849afac45fb3a24680e673a747b",
+    "files": [
+      {
+        "file": "02_country_region_code.md",
+        "pages": "1-10",
+        "chars": 6365
+      }
+    ],
+    "errors": []
+  },
+  {
+    "out": "03_error_code",
+    "source_file": "ISAPI/Field Dictionary (1).xlsx",
+    "real_content": "ErrorCode (status/sub-status/error codes)",
+    "kind": "xlsx",
+    "sha256": "fbc5c3f4ccfbd69d6a235684387d764d6814b1037f823c6da0ae4c7d9f67a5f1",
+    "files": [
+      {
+        "file": "03_error_code.md",
+        "chars": 255139
+      }
+    ],
+    "errors": []
+  },
+  {
+    "out": "04_field_dictionary",
+    "source_file": "ISAPI/ISAPI_Face Recognition Terminals_Value Series (1).pdf",
+    "real_content": "Field Dictionary",
+    "kind": "xlsx",
+    "sha256": "dca4382d6c6ec3695e24bb1a612d7ba46d212ade328b63b056770202be8b4627",
+    "files": [
+      {
+        "file": "04_field_dictionary.md",
+        "chars": 193374
+      }
+    ],
+    "errors": []
+  },
+  {
+    "out": "05_isapi_frt_value_series",
+    "source_file": "ISAPI/Log (1).pdf",
+    "real_content": "ISAPI Developer Guide - Face Recognition Terminals (Value Series)",
+    "kind": "pdf-chunked",
+    "sha256": "985b3d6a8c767ed782d6727f00ce459bb311b0c7333bd7a5725945e23d728320",
+    "files": [
+      {
+        "file": "05_isapi_frt_value_series/p001-025.md",
+        "pages": "1-25",
+        "chars": 57349
+      },
+      {
+        "file": "05_isapi_frt_value_series/p026-050.md",
+        "pages": "26-50",
+        "chars": 40990
+      },
+      {
+        "file": "05_isapi_frt_value_series/p051-075.md",
+        "pages": "51-75",
+        "chars": 46536
+      },
+      {
+        "file": "05_isapi_frt_value_series/p076-100.md",
+        "pages": "76-100",
+        "chars": 25287
+      },
+      {
+        "file": "05_isapi_frt_value_series/p101-125.md",
+        "pages": "101-125",
+        "chars": 23747
+      },
+      {
+        "file": "05_isapi_frt_value_series/p126-150.md",
+        "pages": "126-150",
+        "chars": 37056
+      },
+      {
+        "file": "05_isapi_frt_value_series/p151-175.md",
+        "pages": "151-175",
+        "chars": 70939
+      },
+      {
+        "file": "05_isapi_frt_value_series/p176-200.md",
+        "pages": "176-200",
+        "chars": 94954
+      },
+      {
+        "file": "05_isapi_frt_value_series/p201-225.md",
+        "pages": "201-225",
+        "chars": 127306
+      },
+      {
+        "file": "05_isapi_frt_value_series/p226-250.md",
+        "pages": "226-250",
+        "chars": 135329
+      },
+      {
+        "file": "05_isapi_frt_value_series/p251-275.md",
+        "pages": "251-275",
+        "chars": 154948
+      },
+      {
+        "file": "05_isapi_frt_value_series/p276-300.md",
+        "pages": "276-300",
+        "chars": 147602
+      },
+      {
+        "file": "05_isapi_frt_value_series/p301-325.md",
+        "pages": "301-325",
+        "chars": 91438
+      },
+      {
+        "file": "05_isapi_frt_value_series/p326-350.md",
+        "pages": "326-350",
+        "chars": 93056
+      },
+      {
+        "file": "05_isapi_frt_value_series/p351-375.md",
+        "pages": "351-375",
+        "chars": 93998
+      },
+      {
+        "file": "05_isapi_frt_value_series/p376-400.md",
+        "pages": "376-400",
+        "chars": 84335
+      },
+      {
+        "file": "05_isapi_frt_value_series/p401-425.md",
+        "pages": "401-425",
+        "chars": 75482
+      },
+      {
+        "file": "05_isapi_frt_value_series/p426-450.md",
+        "pages": "426-450",
+        "chars": 77223
+      },
+      {
+        "file": "05_isapi_frt_value_series/p451-475.md",
+        "pages": "451-475",
+        "chars": 100141
+      },
+      {
+        "file": "05_isapi_frt_value_series/p476-500.md",
+        "pages": "476-500",
+        "chars": 63112
+      },
+      {
+        "file": "05_isapi_frt_value_series/p501-525.md",
+        "pages": "501-525",
+        "chars": 60348
+      },
+      {
+        "file": "05_isapi_frt_value_series/p526-550.md",
+        "pages": "526-550",
+        "chars": 63682
+      },
+      {
+        "file": "05_isapi_frt_value_series/p551-565.md",
+        "pages": "551-565",
+        "chars": 37999
+      }
+    ],
+    "errors": [
+      {
+        "page": 1,
+        "warning": "near-empty markdown (pdf text chars=27)"
+      },
+      {
+        "page": 100,
+        "warning": "near-empty markdown (pdf text chars=27)"
+      },
+      {
+        "page": 150,
+        "warning": "near-empty markdown (pdf text chars=27)"
+      },
+      {
+        "page": 155,
+        "warning": "near-empty markdown (pdf text chars=27)"
+      }
+    ]
+  },
+  {
+    "out": "06_log_types",
+    "source_file": "ISAPI/Region Code (1).pdf",
+    "real_content": "B.1 Log Types for ISAPI",
+    "kind": "pdf",
+    "sha256": "353409e916913f076d3ea0da8883f2866c08154244f7bd70304e91e5d5f7e5be",
+    "files": [
+      {
+        "file": "06_log_types.md",
+        "pages": "1-27",
+        "chars": 45623
+      }
+    ],
+    "errors": []
+  }
+]

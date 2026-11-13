@@ -1,0 +1,13 @@
+# Graphify: не индексировать секреты, ПДн, зависимости и сгенерированные файлы
+deploy/.env
+deploy/.env.*
+deploy/backups/
+data/
+**/*.xlsx
+**/*.db
+frontend/package-lock.json
+frontend/node_modules/
+frontend/dist/
+**/__pycache__/
+.venv*/
+graphify-out/

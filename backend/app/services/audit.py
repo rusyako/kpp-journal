@@ -21,6 +21,16 @@ ACTION_TITLES = {
     "import": "Загрузил список",
     "report_sent": "Отправлен отчёт",
     "login": "Вход",
+    "exit_turnstile": "Вышел через турникет",
+    "passage_confirm": "Подтвердил проход",
+    "pilot_setup": "Пилот: подготовка",
+    "pilot_enabled": "Пилот включён",
+    "pilot_disabled": "Пилот выключен",
+    "pilot_permission_set": "Пилот: разрешение",
+    "pilot_permission_revoke": "Пилот: отмена разрешения",
+    "pilot_simulate": "Пилот: симуляция",
+    "pilot_refresh": "Пилот: чтение терминала",
+    "pilot_user_type": "Пилот: смена userType",
 }
 
 

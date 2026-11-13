@@ -3,6 +3,8 @@
     python -m app.cli create-admin <логин> "<Имя>"     # пароль спросит или возьмёт из ADMIN_PASSWORD
     python -m app.cli send-report [ГГГГ-ММ-ДД]
     python -m app.cli demo                             # вымышленные данные для проверки
+    python -m app.cli pilot-setup                      # виртуальные терминалы + запись пилота Hikvision
+    python -m app.cli pilot-device <key> --host IP --allowed-ips IP --credentials-env STAND   # зарегистрировать терминал
 """
 
 import argparse
@@ -68,9 +70,50 @@ def demo() -> None:
     print("✅ Демо-данные: admin / kpp / kotiki / primary / director, пароль demo-pass-123")
 
 
+def pilot_setup() -> None:
+    from app.services.pilot import ensure_setup
+
+    with SessionLocal() as db:
+        print(ensure_setup(db, None))
+
+
+def pilot_device(args) -> None:
+    """Зарегистрировать терминал в kpp-journal. На само устройство ничего не отправляет."""
+    from app.models import HikDevice, HikDirection
+
+    with SessionLocal() as db:
+        device = db.scalar(select(HikDevice).where(HikDevice.key == args.key))
+        if device is None:
+            device = HikDevice(key=args.key, name=args.name or args.key, direction=HikDirection(args.direction))
+            db.add(device)
+        device.name = args.name or device.name
+        device.host, device.port, device.scheme = args.host, args.port, args.scheme
+        device.direction = HikDirection(args.direction)
+        device.allowed_ips = [ip.strip() for ip in args.allowed_ips.split(",") if ip.strip()]
+        device.credentials_env = args.credentials_env
+        device.response_mode = args.response_mode
+        device.door_no = args.door_no
+        device.simulated, device.active = False, not args.inactive
+        db.commit()
+    print(f"✅ Терминал {args.key}: {args.host}, {args.direction}, приём событий с {args.allowed_ips or '— (никого)'}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="cmd", required=True)
+    sub.add_parser("pilot-setup")
+    p = sub.add_parser("pilot-device")
+    p.add_argument("key")
+    p.add_argument("--name")
+    p.add_argument("--host", required=True)
+    p.add_argument("--port", type=int, default=80)
+    p.add_argument("--scheme", default="http", choices=["http", "https"])
+    p.add_argument("--direction", default="exit", choices=["exit", "entry"])
+    p.add_argument("--allowed-ips", default="", help="с каких IP принимать события (через запятую)")
+    p.add_argument("--credentials-env", help="префикс HIK_<X>_USER / HIK_<X>_PASSWORD")
+    p.add_argument("--response-mode", default="sync", choices=["sync", "async"])
+    p.add_argument("--door-no", type=int, default=1)
+    p.add_argument("--inactive", action="store_true")
     p = sub.add_parser("create-admin")
     p.add_argument("username")
     p.add_argument("name")
@@ -86,6 +129,10 @@ def main() -> None:
             print(send_report(db, args.day or clock.today()))
     elif args.cmd == "demo":
         demo()
+    elif args.cmd == "pilot-setup":
+        pilot_setup()
+    elif args.cmd == "pilot-device":
+        pilot_device(args)
 
 
 if __name__ == "__main__":

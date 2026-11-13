@@ -6,6 +6,7 @@ import Admin from "./pages/Admin";
 import Advisor from "./pages/Advisor";
 import Kpp from "./pages/Kpp";
 import Login from "./pages/Login";
+import Pilot from "./pages/Pilot";
 import Reports from "./pages/Reports";
 
 const ME_CACHE = "kpp-me";
@@ -32,6 +33,7 @@ const NAV: { to: string; label: string; roles: Role[] }[] = [
   { to: "/advisor", label: "Эдвайзери", roles: ["advisor", "admin", "viewer"] },
   { to: "/report", label: "Отчёты", roles: ["admin", "viewer"] },
   { to: "/admin", label: "Управление", roles: ["admin"] },
+  { to: "/pilot", label: "Пилот Hikvision", roles: ["admin"] },
 ];
 
 function readCachedMe(): Me | null {
@@ -94,6 +96,7 @@ export default function App() {
         <Route path="/advisor" element={allow(["advisor", "admin", "viewer"], <Advisor />)} />
         <Route path="/report" element={allow(["admin", "viewer"], <Reports />)} />
         <Route path="/admin/*" element={allow(["admin"], <Admin />)} />
+        <Route path="/pilot" element={allow(["admin"], <Pilot />)} />
         <Route path="*" element={<Navigate to={HOME[me.role]} replace />} />
       </Routes>
     </SessionContext.Provider>

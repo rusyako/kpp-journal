@@ -58,6 +58,16 @@ def sent(monkeypatch) -> list:
     return messages
 
 
+@pytest.fixture(autouse=True)
+def _fresh_sim_terminals():
+    """Состояние виртуальных терминалов пилота живёт в процессе — между тестами сбрасываем."""
+    from app.services.pilot import reset_sim_terminals
+
+    reset_sim_terminals()
+    yield
+    reset_sim_terminals()
+
+
 @pytest.fixture
 def db(monkeypatch, now, sent):
     engine = create_engine("sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)

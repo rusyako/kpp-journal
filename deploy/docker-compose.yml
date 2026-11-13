@@ -39,6 +39,22 @@ services:
     depends_on:
       api: { condition: service_started }
 
+  hikvision-gateway:
+    # Приёмник запросов терминалов Hikvision. Запускается только явно:
+    #   docker compose --profile hikvision up -d hikvision-gateway
+    # Наружу через Caddy НЕ публикуется; привязать к IP в сети терминалов (HIKVISION_GATEWAY_BIND).
+    profiles: ["hikvision"]
+    image: kpp-journal:latest
+    restart: unless-stopped
+    command: ["uvicorn", "app.hikvision_gateway:app", "--host", "0.0.0.0", "--port", "8090"]
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://kpp:${POSTGRES_PASSWORD}@db/kpp
+    depends_on:
+      api: { condition: service_started }
+    ports:
+      - "${HIKVISION_GATEWAY_BIND:-127.0.0.1}:${HIKVISION_GATEWAY_PORT:-8090}:8090"
+
   caddy:
     # HTTPS-сертификат Let's Encrypt выпускается автоматически для DOMAIN
     image: caddy:2-alpine

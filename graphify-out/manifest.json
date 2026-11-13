@@ -1,0 +1,806 @@
+{
+  "backend/alembic/env.py": {
+    "mtime": 1793684484.0485928,
+    "seen": 1793686549.3506706,
+    "ast_hash": "0dc88f4abf475d7bb68993ab2de94090",
+    "semantic_hash": "0dc88f4abf475d7bb68993ab2de94090"
+  },
+  "backend/alembic/versions/0001_initial_schema.py": {
+    "mtime": 1793684484.052582,
+    "seen": 1793686549.3506706,
+    "ast_hash": "ffcdfb65eb894cfb4652b8e3c04b255d",
+    "semantic_hash": "ffcdfb65eb894cfb4652b8e3c04b255d"
+  },
+  "backend/app/__init__.py": {
+    "mtime": 1793684484.0545924,
+    "seen": 1793686549.3506706,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "backend/app/api/__init__.py": {
+    "mtime": 1793684484.0565853,
+    "seen": 1793686549.3506706,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "backend/app/api/admin.py": {
+    "mtime": 1793684484.0585897,
+    "seen": 1793686549.3506706,
+    "ast_hash": "4ce2feb6beca817fa399a1d3d43309bf",
+    "semantic_hash": "4ce2feb6beca817fa399a1d3d43309bf"
+  },
+  "backend/app/api/advisor.py": {
+    "mtime": 1793684484.059586,
+    "seen": 1793686549.3506706,
+    "ast_hash": "d44a8b657babcd8e7d05743687d34246",
+    "semantic_hash": "d44a8b657babcd8e7d05743687d34246"
+  },
+  "backend/app/api/auth.py": {
+    "mtime": 1793684484.061582,
+    "seen": 1793686549.3506706,
+    "ast_hash": "38ea9e29fd2916b5a0ac3dc18f29c640",
+    "semantic_hash": "38ea9e29fd2916b5a0ac3dc18f29c640"
+  },
+  "backend/app/api/kpp.py": {
+    "mtime": 1793684484.0625834,
+    "seen": 1793686549.3506706,
+    "ast_hash": "a0238031608706f20be9c9bed9acfeae",
+    "semantic_hash": "a0238031608706f20be9c9bed9acfeae"
+  },
+  "backend/app/bot.py": {
+    "mtime": 1793684484.0645854,
+    "seen": 1793686549.3506706,
+    "ast_hash": "58832e25d2639c7787d0022ddd5ed849",
+    "semantic_hash": "58832e25d2639c7787d0022ddd5ed849"
+  },
+  "backend/app/cli.py": {
+    "mtime": 1794547842.8144548,
+    "seen": 1794548443.234905,
+    "ast_hash": "9a306f25ffa24f730eb04e04069e0ee1",
+    "semantic_hash": ""
+  },
+  "backend/app/clock.py": {
+    "mtime": 1793684484.066592,
+    "seen": 1793686549.3506706,
+    "ast_hash": "7ccdff873c5f7561662aaaebe7f0e09f",
+    "semantic_hash": "7ccdff873c5f7561662aaaebe7f0e09f"
+  },
+  "backend/app/config.py": {
+    "mtime": 1793684484.0675852,
+    "seen": 1793686549.3506706,
+    "ast_hash": "43b09be5507aaf78c084578863a4c61a",
+    "semantic_hash": "43b09be5507aaf78c084578863a4c61a"
+  },
+  "backend/app/db.py": {
+    "mtime": 1793684484.0685833,
+    "seen": 1793686549.3506706,
+    "ast_hash": "0fd43fd8dbf35c2e2947fa7cddc86ecf",
+    "semantic_hash": "0fd43fd8dbf35c2e2947fa7cddc86ecf"
+  },
+  "backend/app/deps.py": {
+    "mtime": 1793684484.0705879,
+    "seen": 1793686549.3506706,
+    "ast_hash": "9c7241873f2347282d8a819c1552a770",
+    "semantic_hash": "9c7241873f2347282d8a819c1552a770"
+  },
+  "backend/app/events.py": {
+    "mtime": 1793684484.0715826,
+    "seen": 1793686549.3506706,
+    "ast_hash": "7d900d1ed17bb4985d4018bbf92c2e4a",
+    "semantic_hash": "7d900d1ed17bb4985d4018bbf92c2e4a"
+  },
+  "backend/app/importer.py": {
+    "mtime": 1793684484.0725794,
+    "seen": 1793686549.3506706,
+    "ast_hash": "28b2a81198f6b77ae24f5bbc12eb5a9f",
+    "semantic_hash": "28b2a81198f6b77ae24f5bbc12eb5a9f"
+  },
+  "backend/app/main.py": {
+    "mtime": 1794547792.782236,
+    "seen": 1794548443.234905,
+    "ast_hash": "f4df9e80701dfd3384842bd455f30238",
+    "semantic_hash": ""
+  },
+  "backend/app/models.py": {
+    "mtime": 1794547501.3434877,
+    "seen": 1794548443.234905,
+    "ast_hash": "824851f312fe31c16ac1cce24e3a5773",
+    "semantic_hash": ""
+  },
+  "backend/app/notify.py": {
+    "mtime": 1793684484.077582,
+    "seen": 1793686549.3506706,
+    "ast_hash": "55a4841916ecd8fc043a6ebb5f1b22ea",
+    "semantic_hash": "55a4841916ecd8fc043a6ebb5f1b22ea"
+  },
+  "backend/app/scheduler.py": {
+    "mtime": 1793684484.0785892,
+    "seen": 1793686549.3506706,
+    "ast_hash": "f92fe0e2bb349945e9eed6036b51d14c",
+    "semantic_hash": "f92fe0e2bb349945e9eed6036b51d14c"
+  },
+  "backend/app/services/__init__.py": {
+    "mtime": 1793684484.0795887,
+    "seen": 1793686549.3506706,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "backend/app/services/advisor.py": {
+    "mtime": 1793684484.0815833,
+    "seen": 1793686549.3506706,
+    "ast_hash": "ad1c7d520d99621fa40a9cce0c657582",
+    "semantic_hash": "ad1c7d520d99621fa40a9cce0c657582"
+  },
+  "backend/app/services/audit.py": {
+    "mtime": 1794547800.9073687,
+    "seen": 1794548443.234905,
+    "ast_hash": "0945eb5af76571e55bdfd5a89a23e44f",
+    "semantic_hash": ""
+  },
+  "backend/app/services/auth.py": {
+    "mtime": 1793684484.0835862,
+    "seen": 1793686549.3506706,
+    "ast_hash": "988d6b6263059f9a0129bcc02081adc4",
+    "semantic_hash": "988d6b6263059f9a0129bcc02081adc4"
+  },
+  "backend/app/services/calendar.py": {
+    "mtime": 1793684484.084591,
+    "seen": 1793686549.3506706,
+    "ast_hash": "e1d223bd99ef2c5090e88eaa019b59e6",
+    "semantic_hash": "e1d223bd99ef2c5090e88eaa019b59e6"
+  },
+  "backend/app/services/day.py": {
+    "mtime": 1793684484.085583,
+    "seen": 1793686549.3506706,
+    "ast_hash": "5fc0e387c8fe6603d98ab648fc470874",
+    "semantic_hash": "5fc0e387c8fe6603d98ab648fc470874"
+  },
+  "backend/app/services/exits.py": {
+    "mtime": 1793684484.0875835,
+    "seen": 1793686549.3506706,
+    "ast_hash": "489a68fa18fbf53bb64d0fd76724c87a",
+    "semantic_hash": "489a68fa18fbf53bb64d0fd76724c87a"
+  },
+  "backend/app/services/invites.py": {
+    "mtime": 1793684484.0895813,
+    "seen": 1793686549.3506706,
+    "ast_hash": "0afb8edc63c149db221be38602bf9c85",
+    "semantic_hash": "0afb8edc63c149db221be38602bf9c85"
+  },
+  "backend/app/services/normalize.py": {
+    "mtime": 1793684484.090592,
+    "seen": 1793686549.3506706,
+    "ast_hash": "f3fd5a2c671e221d0d0af48dad56b4bc",
+    "semantic_hash": "f3fd5a2c671e221d0d0af48dad56b4bc"
+  },
+  "backend/app/services/report.py": {
+    "mtime": 1793684484.09159,
+    "seen": 1793686549.3506706,
+    "ast_hash": "bdd1a94b47a33229a88935c26ca65650",
+    "semantic_hash": "bdd1a94b47a33229a88935c26ca65650"
+  },
+  "backend/app/services/search.py": {
+    "mtime": 1793684484.0925913,
+    "seen": 1793686549.3506706,
+    "ast_hash": "8aada1bd26c4c347f5ece8e188ce4d69",
+    "semantic_hash": "8aada1bd26c4c347f5ece8e188ce4d69"
+  },
+  "backend/app/services/time_parse.py": {
+    "mtime": 1793684484.0945923,
+    "seen": 1793686549.3506706,
+    "ast_hash": "fd665f71e788b393c20b708a24a5ec76",
+    "semantic_hash": "fd665f71e788b393c20b708a24a5ec76"
+  },
+  "backend/pyproject.toml": {
+    "mtime": 1793684484.097584,
+    "seen": 1793686549.3506706,
+    "ast_hash": "e8496708f0f48b90b7ea5e41a686a2e1",
+    "semantic_hash": "e8496708f0f48b90b7ea5e41a686a2e1"
+  },
+  "backend/tests/__init__.py": {
+    "mtime": 1793684484.098587,
+    "seen": 1793686549.3506706,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "backend/tests/conftest.py": {
+    "mtime": 1793684484.1005895,
+    "seen": 1793686549.3506706,
+    "ast_hash": "39c472a70305de6c011b38af867e5081",
+    "semantic_hash": "39c472a70305de6c011b38af867e5081"
+  },
+  "backend/tests/test_api.py": {
+    "mtime": 1793684484.10159,
+    "seen": 1793686549.3506706,
+    "ast_hash": "889b2d63908daa48cb14f7df087d52bf",
+    "semantic_hash": "889b2d63908daa48cb14f7df087d52bf"
+  },
+  "backend/tests/test_importer.py": {
+    "mtime": 1793684484.102586,
+    "seen": 1793686549.3506706,
+    "ast_hash": "c349358f74a303d5358c3a52faa81928",
+    "semantic_hash": "c349358f74a303d5358c3a52faa81928"
+  },
+  "backend/tests/test_search.py": {
+    "mtime": 1793684484.1045864,
+    "seen": 1793686549.3506706,
+    "ast_hash": "725bd31f2134156ecebfb61048249d98",
+    "semantic_hash": "725bd31f2134156ecebfb61048249d98"
+  },
+  "backend/tests/test_time_parse.py": {
+    "mtime": 1793684484.1055894,
+    "seen": 1793686549.3506706,
+    "ast_hash": "4e742e406472e418590e4d2c7f2f8f27",
+    "semantic_hash": "4e742e406472e418590e4d2c7f2f8f27"
+  },
+  "deploy/backup.sh": {
+    "mtime": 1793684484.1105917,
+    "seen": 1793686549.3506706,
+    "ast_hash": "6aee9bfc14e6dc8e24cbaba8e6791f24",
+    "semantic_hash": "6aee9bfc14e6dc8e24cbaba8e6791f24"
+  },
+  "frontend/package.json": {
+    "mtime": 1793684484.1165922,
+    "seen": 1793686549.3506706,
+    "ast_hash": "9ab7cb64c8f0ec643c4abfea200095f3",
+    "semantic_hash": "9ab7cb64c8f0ec643c4abfea200095f3"
+  },
+  "frontend/public/sw.js": {
+    "mtime": 1793684484.1215837,
+    "seen": 1793686549.3506706,
+    "ast_hash": "3fc89e3fadc1a4f520af433b75f10667",
+    "semantic_hash": "3fc89e3fadc1a4f520af433b75f10667"
+  },
+  "frontend/src/App.tsx": {
+    "mtime": 1794548162.6108284,
+    "seen": 1794548443.234905,
+    "ast_hash": "cac26bf5323b76dbefc231b84a3d764c",
+    "semantic_hash": ""
+  },
+  "frontend/src/lib/api.ts": {
+    "mtime": 1793684484.1256208,
+    "seen": 1793686549.3506706,
+    "ast_hash": "7c00584e0ae73046b6b90495595b2036",
+    "semantic_hash": "7c00584e0ae73046b6b90495595b2036"
+  },
+  "frontend/src/lib/live.ts": {
+    "mtime": 1793684484.127587,
+    "seen": 1793686549.3506706,
+    "ast_hash": "7fe51c84111aef4290c82072fd6a7eca",
+    "semantic_hash": "7fe51c84111aef4290c82072fd6a7eca"
+  },
+  "frontend/src/lib/normalize.ts": {
+    "mtime": 1793684484.128584,
+    "seen": 1793686549.3506706,
+    "ast_hash": "ee4cab35929696bcf1ff7be67e4ecde8",
+    "semantic_hash": "ee4cab35929696bcf1ff7be67e4ecde8"
+  },
+  "frontend/src/lib/offlineQueue.ts": {
+    "mtime": 1793684484.1295867,
+    "seen": 1793686549.3506706,
+    "ast_hash": "364cd213e7348200da5ac048799523b4",
+    "semantic_hash": "364cd213e7348200da5ac048799523b4"
+  },
+  "frontend/src/lib/search.test.ts": {
+    "mtime": 1793684484.1315856,
+    "seen": 1793686549.3506706,
+    "ast_hash": "a2e7570910e7da2b358824262927d5f5",
+    "semantic_hash": "a2e7570910e7da2b358824262927d5f5"
+  },
+  "frontend/src/lib/search.ts": {
+    "mtime": 1793684484.132593,
+    "seen": 1793686549.3506706,
+    "ast_hash": "b311141cc239e117971e6fa5ebaec477",
+    "semantic_hash": "b311141cc239e117971e6fa5ebaec477"
+  },
+  "frontend/src/lib/telegram.ts": {
+    "mtime": 1793684484.1345897,
+    "seen": 1793686549.3506706,
+    "ast_hash": "30dad8c14997807f3213d8bed5256298",
+    "semantic_hash": "30dad8c14997807f3213d8bed5256298"
+  },
+  "frontend/src/main.tsx": {
+    "mtime": 1793684484.1356292,
+    "seen": 1793686549.3506706,
+    "ast_hash": "bdedc2be50dfb8c18b0d35b06916bf2e",
+    "semantic_hash": "bdedc2be50dfb8c18b0d35b06916bf2e"
+  },
+  "frontend/src/pages/Admin.tsx": {
+    "mtime": 1793684484.1385858,
+    "seen": 1793686549.3506706,
+    "ast_hash": "3a73c72f03402bf274d3ae73307b1b09",
+    "semantic_hash": "3a73c72f03402bf274d3ae73307b1b09"
+  },
+  "frontend/src/pages/Advisor.tsx": {
+    "mtime": 1793684484.139593,
+    "seen": 1793686549.3506706,
+    "ast_hash": "fed21869ee63f73f14e1e9a7e5ff4353",
+    "semantic_hash": "fed21869ee63f73f14e1e9a7e5ff4353"
+  },
+  "frontend/src/pages/Kpp.tsx": {
+    "mtime": 1793684484.141594,
+    "seen": 1793686549.3506706,
+    "ast_hash": "fecc968f2108bf613fa8a2467bd8041c",
+    "semantic_hash": "fecc968f2108bf613fa8a2467bd8041c"
+  },
+  "frontend/src/pages/Login.tsx": {
+    "mtime": 1793684484.1435902,
+    "seen": 1793686549.3506706,
+    "ast_hash": "ff69fd47d59935865bef7f83349d3648",
+    "semantic_hash": "ff69fd47d59935865bef7f83349d3648"
+  },
+  "frontend/src/pages/Reports.tsx": {
+    "mtime": 1793684484.1445844,
+    "seen": 1793686549.3506706,
+    "ast_hash": "b5634edc949630eaa07fde450331604d",
+    "semantic_hash": "b5634edc949630eaa07fde450331604d"
+  },
+  "frontend/tsconfig.json": {
+    "mtime": 1793684484.1465933,
+    "seen": 1793686549.3506706,
+    "ast_hash": "12a88f22bca71726f38c5ab4b940636d",
+    "semantic_hash": "12a88f22bca71726f38c5ab4b940636d"
+  },
+  "frontend/vite.config.ts": {
+    "mtime": 1793684484.1475937,
+    "seen": 1793686549.3506706,
+    "ast_hash": "69c4d9d24af59096da63e1a155e5e1c8",
+    "semantic_hash": "69c4d9d24af59096da63e1a155e5e1c8"
+  },
+  "shared/search_cases.json": {
+    "mtime": 1793684484.1495917,
+    "seen": 1793686549.3506706,
+    "ast_hash": "f4c25d9856f146a485cd93f9216631bf",
+    "semantic_hash": "f4c25d9856f146a485cd93f9216631bf"
+  },
+  "backend/alembic/versions/0002_hikvision_pilot.py": {
+    "mtime": 1794547871.889977,
+    "seen": 1794548443.234905,
+    "ast_hash": "949aabe5bb0b9f4e298221809d592362",
+    "semantic_hash": ""
+  },
+  "backend/app/api/pilot.py": {
+    "mtime": 1794547790.4748902,
+    "seen": 1794548443.234905,
+    "ast_hash": "6a3b827b5bd8c34021db388a4d0af0d0",
+    "semantic_hash": ""
+  },
+  "backend/app/hikvision_gateway.py": {
+    "mtime": 1794547720.9361784,
+    "seen": 1794548443.234905,
+    "ast_hash": "51b933419e0a956b3f6989fd2131c610",
+    "semantic_hash": ""
+  },
+  "backend/app/integrations/__init__.py": {
+    "mtime": 1794547503.251279,
+    "seen": 1794548443.234905,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "backend/app/integrations/hikvision/__init__.py": {
+    "mtime": 1794547506.4501965,
+    "seen": 1794548443.234905,
+    "ast_hash": "206678ea2832be67b193f55e6d70e922",
+    "semantic_hash": ""
+  },
+  "backend/app/integrations/hikvision/adapter.py": {
+    "mtime": 1794547710.388692,
+    "seen": 1794548443.234905,
+    "ast_hash": "7b10afe77895978099d6fec7631ac3b6",
+    "semantic_hash": ""
+  },
+  "backend/app/integrations/hikvision/client.py": {
+    "mtime": 1794547591.7923367,
+    "seen": 1794548443.234905,
+    "ast_hash": "b47a9d08b526e5483f2eb6b732d8d33c",
+    "semantic_hash": ""
+  },
+  "backend/app/integrations/hikvision/diagnostics.py": {
+    "mtime": 1794547854.3669944,
+    "seen": 1794548443.234905,
+    "ast_hash": "6ec890d60f65778eb6fa5f9e54b61653",
+    "semantic_hash": ""
+  },
+  "backend/app/integrations/hikvision/mock_device.py": {
+    "mtime": 1794547632.7069304,
+    "seen": 1794548443.234905,
+    "ast_hash": "5f0fa9673a3a137eb72e539156b34419",
+    "semantic_hash": ""
+  },
+  "backend/app/integrations/hikvision/parsing.py": {
+    "mtime": 1794547553.19043,
+    "seen": 1794548443.234905,
+    "ast_hash": "dcd18d72216a4416e724fc91a5ad1017",
+    "semantic_hash": ""
+  },
+  "backend/app/integrations/hikvision/settings.py": {
+    "mtime": 1794547520.053176,
+    "seen": 1794548443.234905,
+    "ast_hash": "cb77456a53840843dbe83c9110cbd680",
+    "semantic_hash": ""
+  },
+  "backend/app/services/pilot.py": {
+    "mtime": 1794548234.247031,
+    "seen": 1794548443.234905,
+    "ast_hash": "a739c8f2cc1217362d1595bdf6fb469a",
+    "semantic_hash": ""
+  },
+  "backend/app/services/release.py": {
+    "mtime": 1794547799.959806,
+    "seen": 1794548443.234905,
+    "ast_hash": "e4536497657c18c1987de38e1d3d10e6",
+    "semantic_hash": ""
+  },
+  "backend/tests/test_hik_adapter.py": {
+    "mtime": 1794547938.132268,
+    "seen": 1794548443.234905,
+    "ast_hash": "d8de978f241d964afa681b26865e9e0c",
+    "semantic_hash": ""
+  },
+  "backend/tests/test_pilot_api.py": {
+    "mtime": 1794548239.2273147,
+    "seen": 1794548443.234905,
+    "ast_hash": "58ad7669f24175ff1693d67ed703205e",
+    "semantic_hash": ""
+  },
+  "backend/tests/test_release.py": {
+    "mtime": 1794547991.2070796,
+    "seen": 1794548443.234905,
+    "ast_hash": "695b3db0ead7a7b16bbd15a64360662d",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/manifest.json": {
+    "mtime": 1794398391.7125108,
+    "seen": 1794548443.234905,
+    "ast_hash": "74296655ff42ce3f19738f83557df0b8",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/verification.json": {
+    "mtime": 1794398455.6861677,
+    "seen": 1794548443.234905,
+    "ast_hash": "2f49f9c62d18071f8059826f13fdae78",
+    "semantic_hash": ""
+  },
+  "export_hikvision_users.py": {
+    "mtime": 1793778655.4918923,
+    "seen": 1794548443.234905,
+    "ast_hash": "3f8fe8cae17340b6dbaece8125e7c4e8",
+    "semantic_hash": ""
+  },
+  "frontend/src/pages/Pilot.tsx": {
+    "mtime": 1794548158.60686,
+    "seen": 1794548443.234905,
+    "ast_hash": "8f658bf44435a964733019f61348fd18",
+    "semantic_hash": ""
+  },
+  "CLAUDE.md": {
+    "mtime": 1794399177.086402,
+    "seen": 1794548443.234905,
+    "ast_hash": "544b87ee42cba63d2af118470444999d",
+    "semantic_hash": ""
+  },
+  "HTA_STUDENT_RELEASE_GRAPHIFY_ANALYSIS.md": {
+    "mtime": 1793686858.0827134,
+    "seen": 1794548443.234905,
+    "ast_hash": "5b9224e6519941a4dc7ecb511ca91942",
+    "semantic_hash": ""
+  },
+  "HTA_STUDENT_RELEASE_TECHNICAL_AUDIT.md": {
+    "mtime": 1793686869.631475,
+    "seen": 1794548443.234905,
+    "ast_hash": "baef6695ff2cdc63185239d532576af1",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1793684484.0445886,
+    "seen": 1794548443.234905,
+    "ast_hash": "24e718b563059358c606aa360215391d",
+    "semantic_hash": ""
+  },
+  "backend/app/templates/report.html": {
+    "mtime": 1793684484.0965848,
+    "seen": 1794548443.234905,
+    "ast_hash": "05ad30d923477e9e942381aa4992f4ee",
+    "semantic_hash": ""
+  },
+  "deploy/docker-compose.yml": {
+    "mtime": 1794548264.7660596,
+    "seen": 1794548443.234905,
+    "ast_hash": "113677663ff8bf80729c8cbd7829d030",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/ACCESS_CONTROL.md": {
+    "mtime": 1794399009.5299745,
+    "seen": 1794548443.234905,
+    "ast_hash": "69207f7a5bdc4afea066ab759b94173a",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/API_ENDPOINT_INDEX.md": {
+    "mtime": 1794398325.5307002,
+    "seen": 1794548443.234905,
+    "ast_hash": "6cb0b7f9798c91d3eb421a2b656a2fca",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/API_REFERENCE.md": {
+    "mtime": 1794399059.57786,
+    "seen": 1794548443.234905,
+    "ast_hash": "95ba58aa3e332630eb443599d3480235",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/AUTHENTICATION.md": {
+    "mtime": 1794398679.5653417,
+    "seen": 1794548443.234905,
+    "ast_hash": "0453cb7f3c219d574b7a650ea707df41",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/DEVICE_CAPABILITIES.md": {
+    "mtime": 1794399072.8634565,
+    "seen": 1794548443.234905,
+    "ast_hash": "e6a6a402404d0830e4fd94be67978fce",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/ERROR_CODES.md": {
+    "mtime": 1794398675.391323,
+    "seen": 1794548443.234905,
+    "ast_hash": "55a575ec9d1b3faeeabfe8a3f48680ce",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/EVENTS.md": {
+    "mtime": 1794398708.9796002,
+    "seen": 1794548443.234905,
+    "ast_hash": "75f666eadb2ba81b7e874afa4546e576",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/INTEGRATION_ARCHITECTURE.md": {
+    "mtime": 1794399135.2611873,
+    "seen": 1794548443.234905,
+    "ast_hash": "8f8540e1e9bb92e91f1fdd43a42fbc21",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/MVP_IMPLEMENTATION.md": {
+    "mtime": 1794548340.062481,
+    "seen": 1794548443.234905,
+    "ast_hash": "f3a78256dde3bb8fbdc0831e4a630eab",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/PILOT_TEST_PLAN.md": {
+    "mtime": 1794548389.8235018,
+    "seen": 1794548443.234905,
+    "ast_hash": "05bf8087e6939829143ebf1d214d76ef",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/README.md": {
+    "mtime": 1794548432.258859,
+    "seen": 1794548443.234905,
+    "ast_hash": "7de0fdfc7cd4a03954e6c0754aa0d8d1",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/REMOTE_VERIFICATION.md": {
+    "mtime": 1794398508.693774,
+    "seen": 1794548443.234905,
+    "ast_hash": "490ea7b301e13d8c18adc9779bf47da5",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/SOURCE_COVERAGE.md": {
+    "mtime": 1794399009.4752243,
+    "seen": 1794548443.234905,
+    "ast_hash": "4c9d619473c6e2ea47df72818ee4221f",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/STUDENT_ACCESS_STRATEGY.md": {
+    "mtime": 1794548422.0772305,
+    "seen": 1794548443.234905,
+    "ast_hash": "c3439891b26b75a1c1040a90b74e16c6",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/USER_MANAGEMENT.md": {
+    "mtime": 1794399009.5439684,
+    "seen": 1794548443.234905,
+    "ast_hash": "21d6d7e93fc9fa845ea0c3fb8c275708",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/01_access_control_event_types.md": {
+    "mtime": 1794398063.6286047,
+    "seen": 1794548443.234905,
+    "ast_hash": "ce9126f3cd27e68269d31d4cabd04dce",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/02_country_region_code.md": {
+    "mtime": 1794398065.3744018,
+    "seen": 1794548443.234905,
+    "ast_hash": "bcfe61c859245e71c1a03fa1bf5781b2",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/03_error_code.md": {
+    "mtime": 1794398066.436123,
+    "seen": 1794548443.234905,
+    "ast_hash": "ff4d74c29da53bc965a5891877568ed2",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/04_field_dictionary.md": {
+    "mtime": 1794398067.9370973,
+    "seen": 1794548443.234905,
+    "ast_hash": "8127aa84e510d8df142199ee13456e01",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/05_isapi_frt_value_series/p001-025.md": {
+    "mtime": 1794398386.635342,
+    "seen": 1794548443.234905,
+    "ast_hash": "00956a52620d2dcc882b283cdae7f57c",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/05_isapi_frt_value_series/p026-050.md": {
+    "mtime": 1794398386.6363442,
+    "seen": 1794548443.234905,
+    "ast_hash": "22b5914387f6a15f06b9032ca0af4779",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/05_isapi_frt_value_series/p051-075.md": {
+    "mtime": 1794398386.6373086,
+    "seen": 1794548443.234905,
+    "ast_hash": "b53c0c0eb60b0676e0df3bff77bf13f3",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/05_isapi_frt_value_series/p076-100.md": {
+    "mtime": 1794398386.6383085,
+    "seen": 1794548443.234905,
+    "ast_hash": "8a119eb1fc4a9d10be2468afc06d782e",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/05_isapi_frt_value_series/p101-125.md": {
+    "mtime": 1794398386.6383085,
+    "seen": 1794548443.234905,
+    "ast_hash": "1c63ad0d224b3c4bb6a971591744f0ff",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/05_isapi_frt_value_series/p126-150.md": {
+    "mtime": 1794398386.6393106,
+    "seen": 1794548443.234905,
+    "ast_hash": "5d546ae5f1fa702f8332fa9c6a687353",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/05_isapi_frt_value_series/p151-175.md": {
+    "mtime": 1794398386.640309,
+    "seen": 1794548443.234905,
+    "ast_hash": "0d661249f1e7fe2227e54c901fd0ffde",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/05_isapi_frt_value_series/p176-200.md": {
+    "mtime": 1794398386.640309,
+    "seen": 1794548443.234905,
+    "ast_hash": "90b413396afaa58204f0eafcda6ffce0",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/05_isapi_frt_value_series/p201-225.md": {
+    "mtime": 1794398386.6413085,
+    "seen": 1794548443.234905,
+    "ast_hash": "21edb792451614a2bcfa6f4e32343c2b",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/05_isapi_frt_value_series/p226-250.md": {
+    "mtime": 1794398386.6428154,
+    "seen": 1794548443.234905,
+    "ast_hash": "cc0d80acad357fb37a1cf634f3056f98",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/05_isapi_frt_value_series/p251-275.md": {
+    "mtime": 1794398386.6428154,
+    "seen": 1794548443.234905,
+    "ast_hash": "dbbba776403e32b4786d884eeb59afe2",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/05_isapi_frt_value_series/p276-300.md": {
+    "mtime": 1794398386.6444128,
+    "seen": 1794548443.234905,
+    "ast_hash": "0075d8e906a1c171e027ba4d21b095d3",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/05_isapi_frt_value_series/p301-325.md": {
+    "mtime": 1794398386.6454196,
+    "seen": 1794548443.234905,
+    "ast_hash": "63b13755b9be1e448258d4de42f0b1df",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/05_isapi_frt_value_series/p326-350.md": {
+    "mtime": 1794398386.646419,
+    "seen": 1794548443.234905,
+    "ast_hash": "7d556a2bc79fc9c36900e86412f33961",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/05_isapi_frt_value_series/p351-375.md": {
+    "mtime": 1794398386.6474204,
+    "seen": 1794548443.234905,
+    "ast_hash": "875c09122e97f848e825c3121b1c8056",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/05_isapi_frt_value_series/p376-400.md": {
+    "mtime": 1794398386.64842,
+    "seen": 1794548443.234905,
+    "ast_hash": "58feb3a446a3bbbb03116a7c625a056f",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/05_isapi_frt_value_series/p401-425.md": {
+    "mtime": 1794398386.64842,
+    "seen": 1794548443.234905,
+    "ast_hash": "5ab97d4945a5585bd089f56bf1b88b89",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/05_isapi_frt_value_series/p426-450.md": {
+    "mtime": 1794398386.6494193,
+    "seen": 1794548443.234905,
+    "ast_hash": "bfe0af21c02f880ca4ae3f21b3ed51dd",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/05_isapi_frt_value_series/p451-475.md": {
+    "mtime": 1794398386.6504207,
+    "seen": 1794548443.234905,
+    "ast_hash": "6d0c9a85d704c0b755fab9c9bc922a6c",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/05_isapi_frt_value_series/p476-500.md": {
+    "mtime": 1794398386.6514194,
+    "seen": 1794548443.234905,
+    "ast_hash": "c9bc76bae5a113f14afaf841bee80e60",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/05_isapi_frt_value_series/p501-525.md": {
+    "mtime": 1794398386.6524198,
+    "seen": 1794548443.234905,
+    "ast_hash": "3dfca8aa4d2c906ffaa005c5120cec79",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/05_isapi_frt_value_series/p526-550.md": {
+    "mtime": 1794398386.6534188,
+    "seen": 1794548443.234905,
+    "ast_hash": "69c1e64077428fd857cebf98bdffd47b",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/05_isapi_frt_value_series/p551-565.md": {
+    "mtime": 1794398386.6534188,
+    "seen": 1794548443.234905,
+    "ast_hash": "6340cbba80ce815a4ab38a2252f79f57",
+    "semantic_hash": ""
+  },
+  "docs/hikvision/raw/06_log_types.md": {
+    "mtime": 1794398391.7115104,
+    "seen": 1794548443.234905,
+    "ast_hash": "f6854d65958b90ff9d5ac73c51bc65ee",
+    "semantic_hash": ""
+  },
+  "frontend/index.html": {
+    "mtime": 1793684484.1135907,
+    "seen": 1794548443.234905,
+    "ast_hash": "a50252bd346a931edb74e07fcb2670b5",
+    "semantic_hash": ""
+  },
+  "ISAPI/Country and Region Code (1).pdf": {
+    "mtime": 1794397560.3986034,
+    "seen": 1794548443.234905,
+    "ast_hash": "d830d712635ccc22fa629c561703f9c3",
+    "semantic_hash": ""
+  },
+  "ISAPI/ISAPI_Face Recognition Terminals_Value Series (1).pdf": {
+    "mtime": 1794397560.4056082,
+    "seen": 1794548443.234905,
+    "ast_hash": "817815eebb2b8fdf657261005a46698f",
+    "semantic_hash": ""
+  },
+  "ISAPI/Log (1).pdf": {
+    "mtime": 1794397560.412618,
+    "seen": 1794548443.234905,
+    "ast_hash": "daa0278971a27a5555eb36bceb62f618",
+    "semantic_hash": ""
+  },
+  "ISAPI/Region Code (1).pdf": {
+    "mtime": 1794397560.415615,
+    "seen": 1794548443.234905,
+    "ast_hash": "ab1d149b63bbee18e6ec4894d34e2faa",
+    "semantic_hash": ""
+  },
+  "frontend/public/icon.svg": {
+    "mtime": 1793684484.1185832,
+    "seen": 1794548443.234905,
+    "ast_hash": "5c1b09f7f6afa3f77f77d72c3e1905de",
+    "semantic_hash": ""
+  }
+}

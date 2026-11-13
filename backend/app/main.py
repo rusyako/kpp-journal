@@ -7,7 +7,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from app import config, db as database, scheduler
-from app.api import admin, advisor, auth, kpp
+from app.api import admin, advisor, auth, kpp, pilot
 from app.deps import resolve_user
 from app.events import hub
 from app.services.auth import SESSION_COOKIE
@@ -25,7 +25,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Журнал КПП", lifespan=lifespan)
-for module in (auth, kpp, advisor, admin):
+for module in (auth, kpp, advisor, admin, pilot):
     app.include_router(module.router)
 
 
