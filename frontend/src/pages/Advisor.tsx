@@ -1,29 +1,34 @@
-import { useCallback, useEffect, useState, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { TopBar, useMe } from "../App";
 import { api, formatDate, type AdvisorRow, type AdvisoryView } from "../lib/api";
 import { useLiveUpdates } from "../lib/live";
 import { webApp } from "../lib/telegram";
 
 const LAST_TAB = "kpp-advisory";
+const REASONS = ["Визит к врачу", "Поедет в визовый центр", "Дополнительные секции", "По состоянию здоровья"];
+
+const reasonOption = (reason: string) => REASONS.includes(reason) ? reason : reason ? "other" : "";
 
 function StudentCard({ row, editable, onSaved }: { row: AdvisorRow; editable: boolean; onSaved: (r: AdvisorRow) => void }) {
   const [time, setTime] = useState(row.time);
   const [reason, setReason] = useState(row.reason);
+  const [selectedReason, setSelectedReason] = useState(() => reasonOption(row.reason));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  // Обновление с сервера не затирает то, что эдвайзер сейчас печатает
-  const [focused, setFocused] = useState(false);
+  // Живые обновления не должны затирать несохранённый черновик.
+  const [dirty, setDirty] = useState(false);
   useEffect(() => {
-    if (!focused) {
+    if (!dirty && !saving) {
       setTime(row.time);
       setReason(row.reason);
+      setSelectedReason(reasonOption(row.reason));
     }
-  }, [row.time, row.reason, focused]);
+  }, [row.time, row.reason, dirty, saving]);
 
-  const save = async () => {
-    setFocused(false);
-    if (time.trim() === row.time && reason.trim() === row.reason) return;
+  const save = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!editable || saving || !dirty) return;
     setSaving(true);
     setError("");
     try {
@@ -32,6 +37,10 @@ function StudentCard({ row, editable, onSaved }: { row: AdvisorRow; editable: bo
         json: { time, reason },
       });
       onSaved(saved);
+      setTime(saved.time);
+      setReason(saved.reason);
+      setSelectedReason(reasonOption(saved.reason));
+      setDirty(false);
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -39,41 +48,73 @@ function StudentCard({ row, editable, onSaved }: { row: AdvisorRow; editable: bo
     }
   };
 
-  const onEnter = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") (e.target as HTMLInputElement).blur();
-  };
-
   return (
-    <div className={`student-card ${row.color ? `c-${row.color}` : ""}`}>
+    <form className={`student-card ${row.color ? `c-${row.color}` : ""}`} onSubmit={save}>
       <div className="top">
         <span className="name">{row.full_name}</span>
         <span className="muted">{row.class_name}</span>
       </div>
       <div className="inputs">
-        <input
-          className="input tnum"
-          placeholder="Время"
-          inputMode="text"
-          value={time}
-          disabled={!editable || saving}
-          onFocus={() => setFocused(true)}
-          onChange={(e) => setTime(e.target.value)}
-          onBlur={save}
-          onKeyDown={onEnter}
-          aria-label={`Время выхода: ${row.full_name}`}
-        />
-        <input
-          className="input"
-          placeholder="Причина (необязательно)"
-          value={reason}
-          disabled={!editable || saving}
-          onFocus={() => setFocused(true)}
-          onChange={(e) => setReason(e.target.value)}
-          onBlur={save}
-          onKeyDown={onEnter}
-          aria-label={`Причина: ${row.full_name}`}
-        />
+        <label className="field">
+          <span>Можно выйти с</span>
+          <input
+            className="input tnum"
+            type="time"
+            step={60}
+            value={time}
+            disabled={!editable || saving}
+            onChange={(e) => { setTime(e.target.value); setDirty(true); }}
+            aria-label={`Время выхода: ${row.full_name}`}
+          />
+        </label>
+        <label className="field">
+          <span>Причина выхода</span>
+          <select
+            className="input"
+            value={selectedReason}
+            disabled={!editable || saving}
+            onChange={(e) => {
+              setSelectedReason(e.target.value);
+              setReason(e.target.value === "other" ? "" : e.target.value);
+              setDirty(true);
+            }}
+            aria-label={`Причина: ${row.full_name}`}
+          >
+            <option value="">Без причины</option>
+            {REASONS.map((item) => <option key={item} value={item}>{item}</option>)}
+            <option value="other">Иное (указать)</option>
+          </select>
+        </label>
       </div>
+      {selectedReason === "other" && (
+        <label className="field">
+          <span>Укажите причину</span>
+          <textarea
+            className="input"
+            rows={2}
+            maxLength={500}
+            required
+            value={reason}
+            disabled={!editable || saving}
+            onChange={(e) => { setReason(e.target.value); setDirty(true); }}
+            aria-label={`Другая причина: ${row.full_name}`}
+            placeholder="Напишите причину выхода"
+          />
+        </label>
+      )}
+      {editable && (
+        <div className="row permission-actions">
+          <button className="btn primary" disabled={!dirty || saving || (selectedReason === "other" && !reason.trim())}>
+            {saving ? "Сохранение..." : "Сохранить"}
+          </button>
+          {time && (
+            <button type="button" className="btn" disabled={saving} onClick={() => { setTime(""); setDirty(true); }}>
+              Убрать время
+            </button>
+          )}
+          {dirty && <span className="muted">Изменения ещё не сохранены</span>}
+        </div>
+      )}
       {(row.status || row.exit || saving || error) && (
         <div className="status tnum">
           {saving ? "Сохраняю…" : row.status}
@@ -87,7 +128,7 @@ function StudentCard({ row, editable, onSaved }: { row: AdvisorRow; editable: bo
           {error && <span className="error"> {error}</span>}
         </div>
       )}
-    </div>
+    </form>
   );
 }
 
@@ -168,8 +209,9 @@ export default function Advisor() {
             </div>
             {help && (
               <div className="card" style={{ marginBottom: 10 }}>
-                Впишите время, с которого ученику можно выйти сегодня: <b>15:05</b>, <b>15.05</b>, <b>1505</b> или <b>9:30</b>.
-                Причина — по желанию. Разрешение сразу видно охране. Сотрите время — разрешение отменится. Когда ученик выйдет,
+                Нажмите на время и выберите часы и минуты, с которых ученику можно выйти сегодня.
+                Выберите причину из списка или «Иное», чтобы написать свою. Нажмите «Сохранить» — разрешение увидит охрана.
+                Для отмены нажмите «Убрать время», затем «Сохранить». Когда ученик выйдет,
                 появится 🚪 со временем выхода. Завтра всё начнётся с чистого листа.
               </div>
             )}

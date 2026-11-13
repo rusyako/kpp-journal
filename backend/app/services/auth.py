@@ -31,16 +31,20 @@ def verify_password(password: str, stored: str | None) -> bool:
     return hmac.compare_digest(digest.hex(), digest_hex)
 
 
-def make_session(user_id: int) -> str:
-    return _serializer.dumps({"uid": user_id})
+def make_session(user_id: int, version: int) -> str:
+    return _serializer.dumps({"uid": user_id, "v": version})
 
 
-def read_session(token: str) -> int | None:
+def read_session(token: str) -> tuple[int, int] | None:
+    """(id пользователя, номер сессии) или None. Cookie старого формата без номера не принимаются."""
     try:
         data = _serializer.loads(token, max_age=SESSION_DAYS * 86400)
     except BadSignature:
         return None
-    return data.get("uid")
+    uid, version = data.get("uid"), data.get("v")
+    if not isinstance(uid, int) or not isinstance(version, int):
+        return None
+    return uid, version
 
 
 def validate_init_data(init_data: str, bot_token: str, max_age: int = 86400) -> dict | None:

@@ -17,6 +17,8 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    if problem := config.secret_key_problem():
+        raise RuntimeError(f"{problem}. Задайте в deploy/.env случайную строку: openssl rand -hex 32")
     hub.bind_loop(asyncio.get_running_loop())
     if config.SCHEDULER_ENABLED:
         scheduler.start()
@@ -34,11 +36,33 @@ def health() -> dict:
     return {"ok": True}
 
 
-@app.websocket("/api/ws")
-async def websocket(ws: WebSocket, tg: str | None = None) -> None:
-    """Сигналы «что-то изменилось». tg — initData для Mini App (в WebSocket нельзя задать заголовок)."""
+WS_AUTH_PREFIX = "auth:"
+WS_AUTH_TIMEOUT = 10  # секунд
+
+
+def _ws_user(init_data: str | None, session_token: str | None):
     with database.SessionLocal() as db:
-        user = resolve_user(db, tg, ws.cookies.get(SESSION_COOKIE))
+        return resolve_user(db, init_data, session_token)
+
+
+@app.websocket("/api/ws")
+async def websocket(ws: WebSocket) -> None:
+    """Сигналы «что-то изменилось».
+
+    Браузер входит по cookie. Mini App cookie не имеет и шлёт initData первым сообщением
+    «auth:<initData>»: в адресе его передавать нельзя — адреса попадают в журналы сервера.
+    """
+    await ws.accept()
+    user = _ws_user(None, ws.cookies.get(SESSION_COOKIE))
+    if user is None:
+        try:
+            first = await asyncio.wait_for(ws.receive_text(), timeout=WS_AUTH_TIMEOUT)
+        except asyncio.TimeoutError:
+            first = ""
+        except WebSocketDisconnect:
+            return
+        if first.startswith(WS_AUTH_PREFIX):
+            user = _ws_user(first[len(WS_AUTH_PREFIX):], None)
     if user is None:
         await ws.close(code=4401)
         return

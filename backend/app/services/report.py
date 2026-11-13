@@ -1,9 +1,14 @@
 """Отчёт за день (Ф-19): сводка + списки, HTML для печати, Telegram и почты."""
 
 from datetime import date
+from io import BytesIO
 from pathlib import Path
+import re
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
+from openpyxl import Workbook
+from openpyxl.styles import Alignment, Font, PatternFill
+from openpyxl.utils import get_column_letter
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
@@ -49,7 +54,6 @@ def build_report(db: Session, d: date) -> dict:
         "exited": len(exited),
         "early": len(by_status.get(EARLY, [])),
         "no_permission": len(by_status.get(NO_PERMISSION, [])),
-        "not_exited": len([r for r in rows if not r.exited and r.student_active]),
         "allowed_not_exited": len(by_status.get(ALLOWED, [])),
     }
     lists = [
@@ -82,6 +86,64 @@ def render_html(report: dict) -> str:
     return _env.get_template("report.html").render(report=report)
 
 
+def render_xlsx(report: dict) -> bytes:
+    wb = Workbook()
+    summary = wb.active
+    summary.title = "Сводка"
+    details = wb.create_sheet("Подробности")
+    summary_rows = [
+        [f"Отчёт КПП за {report['date_label']}"],
+        ["Дата", report["date"]],
+        ["Показатель", "Количество"],
+        ["Всего учеников", report["summary"]["total"]],
+        ["Вышли", report["summary"]["exited"]],
+        ["Раньше времени", report["summary"]["early"]],
+        ["Без разрешения", report["summary"]["no_permission"]],
+        ["С разрешением, но не вышли", report["summary"]["allowed_not_exited"]],
+    ]
+    detail_rows = [
+        [f"Отчёт КПП за {report['date_label']}"],
+        ["Дата", report["date"]],
+        ["Категория", "ФИО", "Класс", "Эдвайзери", "Разрешено", "Вышел", "Причина"],
+    ]
+    fields = ("full_name", "class_name", "advisory", "allowed_time", "exit_time", "reason")
+    for group in report["lists"]:
+        for row in group["rows"]:
+            detail_rows.append([group["title"], *(row[field] for field in fields)])
+
+    for ws, rows, widths in (
+        (summary, summary_rows, (46, 22)),
+        (details, detail_rows, (44, 32, 14, 24, 16, 16, 48)),
+    ):
+        for row_index, values in enumerate(rows, 1):
+            for column, value in enumerate(values, 1):
+                if isinstance(value, str):
+                    # XML 1.0 forbids controls and surrogates; never interpret user text as formulas.
+                    value = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f\ud800-\udfff\ufffe\uffff]", "", value)
+                cell = ws.cell(row_index, column, value)
+                if isinstance(value, str):
+                    cell.data_type = "s"
+                cell.alignment = Alignment(vertical="top", wrap_text=True)
+                if row_index in (1, 3):
+                    cell.font = Font(name="Calibri", size=16 if row_index == 1 else 11, bold=True, color="FFFFFF")
+                    cell.fill = PatternFill("solid", fgColor="17365D")
+                else:
+                    cell.font = Font(name="Calibri", size=11, color="243746")
+                    if row_index > 3 and row_index % 2 == 0:
+                        cell.fill = PatternFill("solid", fgColor="EDF3F8")
+        ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=len(widths))
+        ws.row_dimensions[1].height = 32
+        ws.row_dimensions[3].height = 30
+        for column, width in enumerate(widths, 1):
+            ws.column_dimensions[get_column_letter(column)].width = width
+        ws.freeze_panes = "A4"
+        ws.sheet_view.showGridLines = False
+    details.auto_filter.ref = f"A3:G{details.max_row}"
+    output = BytesIO()
+    wb.save(output)
+    return output.getvalue()
+
+
 def summary_text(report: dict) -> str:
     s = report["summary"]
     return (
@@ -90,7 +152,6 @@ def summary_text(report: dict) -> str:
         f"Вышли: {s['exited']}\n"
         f"🟧 Раньше времени: {s['early']}\n"
         f"⚠️ Без разрешения: {s['no_permission']}\n"
-        f"Не вышли: {s['not_exited']}\n"
         f"🟨 С разрешением, но не вышли: {s['allowed_not_exited']}"
     )
 

@@ -96,6 +96,11 @@ class User(Base):
     # Получает отчёт за день в Telegram (руководство)
     receives_report: Mapped[bool] = mapped_column(Boolean, default=False)
     active: Mapped[bool] = mapped_column(Boolean, default=True)
+    # Номер в cookie сессии. Увеличение номера (смена пароля, «завершить сеансы») выкидывает все входы
+    session_version: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+
+    def revoke_sessions(self) -> None:
+        self.session_version = (self.session_version or 0) + 1
 
     advisories: Mapped[list[Advisory]] = relationship(secondary="user_advisories")
 

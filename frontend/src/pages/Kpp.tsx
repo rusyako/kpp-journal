@@ -90,6 +90,8 @@ export default function Kpp() {
     });
   }, [day, pending]); // pending меняется, когда очередь пополнилась или ушла на сервер
 
+  const eventRows = rows.filter((r) => r.allowed_time !== null || r.exited);
+
   const result = useMemo(
     () => search(query, rows.map((r) => ({ ...r, id: r.student_id }))),
     [query, rows],
@@ -137,8 +139,8 @@ export default function Kpp() {
 
   const onKey = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Escape") setQuery("");
-    // Один найденный и ещё не вышел — Enter сразу отмечает
-    if (e.key === "Enter" && canMark && !busy && result.items.length === 1 && !result.items[0].exited) {
+    // Enter отмечает только одного найденного ученика с разрешением.
+    if (e.key === "Enter" && canMark && !busy && result.items.length === 1 && !result.items[0].exited && result.items[0].allowed_time) {
       mark(result.items[0]);
     }
   };
@@ -175,7 +177,7 @@ export default function Kpp() {
             spellCheck={false}
             aria-label="Поиск ученика"
           />
-          <div className="kpp-hint">{query ? result.hint : canMark ? "Начните вводить — список появится сразу. Enter отмечает, если найден один." : ""}</div>
+          <div className="kpp-hint">{query ? result.hint : canMark ? "Начните вводить — список появится сразу. Enter отмечает, если найден один ученик с разрешением." : ""}</div>
         </div>
 
         {banner && (
@@ -197,17 +199,20 @@ export default function Kpp() {
                     {r.reason && ` · ${r.reason}`}
                     {r.exited && ` · вышел в ${r.exit_time}${r.exit_offline ? " (без связи)" : ""}`}
                   </div>
+                  {!r.allowed_time && (
+                    <div className="error">{r.exited ? "Вышел без разрешения" : "Нет разрешения на выход"}</div>
+                  )}
                 </div>
                 {canMark &&
                   (r.exited ? (
                     <button className="btn danger" disabled={busy} onClick={() => cancel(r)}>
                       Снять отметку
                     </button>
-                  ) : (
+                  ) : r.allowed_time ? (
                     <button className="btn primary" disabled={busy} onClick={() => mark(r)}>
                       Вышел
                     </button>
-                  ))}
+                  ) : null)}
               </div>
             ))}
           </div>
@@ -215,7 +220,10 @@ export default function Kpp() {
 
         <div className="stats tnum">
           <span>
-            Всего <b>{stats.total}</b>
+            Всего учеников <b>{stats.total}</b>
+          </span>
+          <span>
+            В списке событий <b>{eventRows.length}</b>
           </span>
           <span>
             🟨 Ждут выхода <b>{stats.waiting}</b>
@@ -241,7 +249,7 @@ export default function Kpp() {
               </tr>
             </thead>
             <tbody>
-              {rows.map((r) => (
+              {eventRows.map((r) => (
                 <tr key={r.student_id} className={r.color ? `c-${r.color}` : ""}>
                   <td>{r.full_name}</td>
                   <td>{r.class_name}</td>
@@ -256,6 +264,11 @@ export default function Kpp() {
                   <td className="hide-sm">{r.reason}</td>
                 </tr>
               ))}
+              {day && eventRows.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="muted">За сегодня пока нет разрешений и выходов. Найти ученика можно через поиск выше.</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

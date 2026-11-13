@@ -12,18 +12,21 @@ export class ApiError extends Error {
 /** Нет связи с сервером (в отличие от ответа с ошибкой). */
 export class OfflineError extends Error {}
 
-export async function api<T>(path: string, options: RequestInit & { json?: unknown } = {}): Promise<T> {
+export function api(path: string, options: RequestInit & { responseType: "blob" }): Promise<Blob>;
+export function api<T>(path: string, options?: RequestInit & { json?: unknown }): Promise<T>;
+export async function api<T>(path: string, options: RequestInit & { json?: unknown; responseType?: "blob" } = {}): Promise<T | Blob> {
+  const { json, responseType, ...requestOptions } = options;
   const headers = new Headers(options.headers);
   const tg = initData();
   if (tg) headers.set("X-Telegram-Init-Data", tg);
   let body = options.body;
-  if (options.json !== undefined) {
+  if (json !== undefined) {
     headers.set("Content-Type", "application/json");
-    body = JSON.stringify(options.json);
+    body = JSON.stringify(json);
   }
   let res: Response;
   try {
-    res = await fetch(path, { ...options, headers, body, credentials: "same-origin" });
+    res = await fetch(path, { ...requestOptions, headers, body, credentials: "same-origin" });
   } catch {
     throw new OfflineError("Нет связи с сервером");
   }
@@ -37,7 +40,7 @@ export async function api<T>(path: string, options: RequestInit & { json?: unkno
     }
     throw new ApiError(res.status, message);
   }
-  return res.json() as Promise<T>;
+  return responseType === "blob" ? res.blob() : res.json() as Promise<T>;
 }
 
 // ---- Типы ответов API ----

@@ -4,13 +4,14 @@ import io
 from datetime import date
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, Response
 from pydantic import BaseModel
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app import clock, config, scheduler
+from app.api.auth import set_session_cookie
 from app.deps import ADMIN, REPORT_READERS, get_db
 from app.importer import ImportDiff, advisory_kind, apply_import, clean_class, clean_name, parse_rows, read_xlsx
 from app.models import Advisory, AuditLog, Role, SchoolDay, Student, User
@@ -18,7 +19,7 @@ from app.services import audit
 from app.services.auth import hash_password
 from app.services.invites import create_invite
 from app.services.normalize import normalize
-from app.services.report import build_report, render_html, send_report
+from app.services.report import build_report, render_html, render_xlsx, send_report
 
 router = APIRouter(prefix="/api", tags=["admin"])
 
@@ -53,6 +54,8 @@ async def import_list(
     except Exception:
         raise HTTPException(400, "Не удалось прочитать файл. Нужен .xlsx с листом «Для журнала»")
     parsed = parse_rows(raw)
+    if parsed.errors:
+        raise HTTPException(400, "Список не загружен. " + " ".join(parsed.errors))
     if not parsed.rows:
         raise HTTPException(400, "В файле нет ни одного ученика")
     diff = apply_import(db, parsed.rows)
@@ -170,6 +173,7 @@ class UserIn(BaseModel):
     receives_report: bool = False
     active: bool = True
     unlink_telegram: bool = False
+    revoke_sessions: bool = False
 
 
 def _user_dict(u: User) -> dict:
@@ -196,6 +200,9 @@ def _apply_user(db: Session, u: User, body: UserIn) -> None:
         if len(body.password) < 8:
             raise HTTPException(400, "Пароль — не короче 8 символов")
         u.password_hash = hash_password(body.password)
+        u.revoke_sessions()  # старый пароль мог утечь — выходим со всех устройств
+    if body.revoke_sessions:
+        u.revoke_sessions()
     # Без автосброса: занятый логин должен всплыть в _commit_user как 409, а не здесь
     with db.no_autoflush:
         u.advisories = list(db.scalars(select(Advisory).where(Advisory.id.in_(body.advisory_ids))))
@@ -228,7 +235,9 @@ def create_user(body: UserIn, db: Session = Depends(get_db), user: User = Depend
 
 
 @router.put("/admin/users/{user_id}")
-def update_user(user_id: int, body: UserIn, db: Session = Depends(get_db), user: User = Depends(ADMIN)) -> dict:
+def update_user(
+    user_id: int, body: UserIn, response: Response, db: Session = Depends(get_db), user: User = Depends(ADMIN)
+) -> dict:
     u = db.get(User, user_id)
     if u is None:
         raise HTTPException(404, "Пользователь не найден")
@@ -236,6 +245,9 @@ def update_user(user_id: int, body: UserIn, db: Session = Depends(get_db), user:
         raise HTTPException(400, "Нельзя снять права администратора с самого себя")
     _apply_user(db, u, body)
     _commit_user(db)
+    if u.id == user.id:
+        # Свои остальные сеансы завершены, а этот продолжает работать
+        set_session_cookie(response, u)
     return _user_dict(u)
 
 
@@ -290,6 +302,18 @@ def report_json(d: date, db: Session = Depends(get_db), user: User = Depends(REP
 @router.get("/reports/{d}/html", response_class=HTMLResponse)
 def report_html(d: date, db: Session = Depends(get_db), user: User = Depends(REPORT_READERS)) -> str:
     return render_html(build_report(db, d))
+
+
+@router.get("/reports/{d}/xlsx")
+def report_xlsx(d: date, db: Session = Depends(get_db), user: User = Depends(REPORT_READERS)) -> Response:
+    return Response(
+        content=render_xlsx(build_report(db, d)),
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={
+            "Content-Disposition": f'attachment; filename="otchet_{d.isoformat()}.xlsx"',
+            "Cache-Control": "no-store",
+        },
+    )
 
 
 @router.post("/admin/reports/{d}/send")

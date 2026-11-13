@@ -12,8 +12,33 @@ interface AuditEntry {
 export function ReportView({ date }: { date: string }) {
   const me = useMe();
   const [sending, setSending] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [result, setResult] = useState("");
   const [nonce, setNonce] = useState(0);
+
+  const exportExcel = async () => {
+    setExporting(true);
+    setResult("");
+    try {
+      const file = await api(`/api/reports/${date}/xlsx`, { responseType: "blob" });
+      const url = URL.createObjectURL(file);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `otchet_${date}.xlsx`;
+      document.body.appendChild(link);
+      try {
+        link.click();
+      } finally {
+        link.remove();
+        window.setTimeout(() => URL.revokeObjectURL(url), 60000);
+      }
+      setResult(`Скачивание отчёта за ${formatDate(date)} начато`);
+    } catch (e) {
+      setResult((e as Error).message);
+    } finally {
+      setExporting(false);
+    }
+  };
 
   const send = async () => {
     setSending(true);
@@ -30,6 +55,9 @@ export function ReportView({ date }: { date: string }) {
   return (
     <div style={{ display: "grid", gap: 10 }}>
       <div className="row">
+        <button className="btn primary" onClick={exportExcel} disabled={exporting}>
+          {exporting ? "Подготовка Excel..." : "Скачать Excel"}
+        </button>
         <button className="btn small" onClick={() => setNonce(nonce + 1)}>
           Обновить
         </button>
@@ -41,7 +69,7 @@ export function ReportView({ date }: { date: string }) {
             Разослать сейчас
           </button>
         )}
-        <span className="muted">{result}</span>
+        <span className="muted" role="status">{result}</span>
       </div>
       <iframe key={`${date}-${nonce}`} className="report" title={`Отчёт за ${formatDate(date)}`} src={`/api/reports/${date}/html`} />
     </div>

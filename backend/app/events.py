@@ -21,7 +21,7 @@ class Hub:
         self._loop = loop
 
     async def connect(self, ws: WebSocket) -> None:
-        await ws.accept()
+        """Сокет уже принят и проверен (app/main.py)."""
         self._clients.add(ws)
 
     def disconnect(self, ws: WebSocket) -> None:

@@ -24,8 +24,12 @@ def resolve_user(db: Session, init_data: str | None, session_token: str | None) 
         if tg and "id" in tg:
             user = db.scalar(select(User).where(User.telegram_id == int(tg["id"])))
     if user is None and session_token:
-        uid = read_session(session_token)
-        user = db.get(User, uid) if uid else None
+        session = read_session(session_token)
+        if session is not None:
+            uid, version = session
+            user = db.get(User, uid)
+            if user is not None and user.session_version != version:
+                user = None  # сеанс завершён: сменили пароль или нажали «Завершить сеансы»
     return user if user is not None and user.active else None
 
 
