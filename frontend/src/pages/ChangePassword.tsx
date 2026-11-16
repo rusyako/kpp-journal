@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { api } from "../lib/api";
+import PasswordInput from "../components/PasswordInput";
 
 export const MIN_PASSWORD_LENGTH = 10;
 
@@ -63,9 +64,8 @@ export default function ChangePassword({
       {!forced && (
         <label className="field">
           <span>Текущий пароль</span>
-          <input
+          <PasswordInput
             className="input"
-            type="password"
             autoComplete="current-password"
             value={current}
             onChange={(e) => setCurrent(e.target.value)}
@@ -75,9 +75,8 @@ export default function ChangePassword({
       )}
       <label className="field">
         <span>Новый пароль</span>
-        <input
+        <PasswordInput
           className="input"
-          type="password"
           autoComplete="new-password"
           value={next}
           onChange={(e) => setNext(e.target.value)}
@@ -86,7 +85,7 @@ export default function ChangePassword({
       </label>
       <label className="field">
         <span>Повторите новый пароль</span>
-        <input className="input" type="password" autoComplete="new-password" value={repeat} onChange={(e) => setRepeat(e.target.value)} />
+        <PasswordInput autoComplete="new-password" value={repeat} onChange={(e) => setRepeat(e.target.value)} />
       </label>
       <span className={tooShort ? "error" : "muted"}>
         Не короче {MIN_PASSWORD_LENGTH} символов, без логина и не из простых вроде «Qwerty123!».

@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { api } from "../lib/api";
+import PasswordInput from "../components/PasswordInput";
 
 export default function Login({ onLogin }: { onLogin: () => void }) {
   const [username, setUsername] = useState("");
@@ -30,9 +31,8 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
       </label>
       <label className="field">
         <span>Пароль</span>
-        <input
+        <PasswordInput
           className="input"
-          type="password"
           autoComplete="current-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}

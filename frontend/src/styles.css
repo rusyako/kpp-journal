@@ -187,6 +187,36 @@ code {
   box-shadow: 0 0 0 3px rgba(119, 188, 75, 0.25);
 }
 
+.password-input {
+  position: relative;
+  display: block;
+  min-width: 0;
+}
+.password-input .input {
+  min-height: 48px;
+  padding-right: 52px;
+}
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 3px;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.password-toggle:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
 .field {
   display: grid;
   gap: 4px;
