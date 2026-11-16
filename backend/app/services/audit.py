@@ -21,6 +21,8 @@ ACTION_TITLES = {
     "import": "Загрузил список",
     "report_sent": "Отправлен отчёт",
     "login": "Вход",
+    "password_changed": "Сменил пароль",
+    "password_reset": "Выдал временный пароль",
 }
 
 

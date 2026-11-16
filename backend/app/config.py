@@ -23,6 +23,8 @@ def secret_key_problem() -> str | None:
     if len(SECRET_KEY) < MIN_SECRET_LENGTH:
         return f"SECRET_KEY короче {MIN_SECRET_LENGTH} символов"
     return None
+# Временный пароль новых пользователей и после сброса. При первом входе его нужно сменить на свой.
+TEMP_PASSWORD = os.environ.get("TEMP_PASSWORD", "Qwerty123!")
 SESSION_DAYS = int(os.environ.get("SESSION_DAYS", "30"))
 # Cookie только по HTTPS; локально без TLS выключить: COOKIE_SECURE=0
 COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "1") == "1"

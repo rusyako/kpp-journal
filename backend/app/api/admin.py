@@ -16,7 +16,7 @@ from app.deps import ADMIN, REPORT_READERS, get_db
 from app.importer import ImportDiff, advisory_kind, apply_import, clean_class, clean_name, parse_rows, read_xlsx
 from app.models import Advisory, AuditLog, Role, SchoolDay, Student, User
 from app.services import audit
-from app.services.auth import hash_password
+from app.services.passwords import issue_temp_password, temp_password_expired
 from app.services.invites import create_invite
 from app.services.normalize import normalize
 from app.services.report import build_report, render_html, render_xlsx, send_report
@@ -167,13 +167,22 @@ class UserIn(BaseModel):
     role: Role
     display_name: str
     username: str | None = None
-    password: str | None = None
+    # Пароль администратор не задаёт: выдаётся временный (reset-password), постоянный пользователь ставит сам
     email: str | None = None
     advisory_ids: list[int] = []
     receives_report: bool = False
     active: bool = True
     unlink_telegram: bool = False
     revoke_sessions: bool = False
+
+
+def _password_status(u: User) -> str:
+    """none — пароля нет; temp — выдан временный; expired — временный устарел; set — свой пароль."""
+    if not u.password_hash:
+        return "none"
+    if u.must_change_password:
+        return "expired" if temp_password_expired(u) else "temp"
+    return "set"
 
 
 def _user_dict(u: User) -> dict:
@@ -184,6 +193,7 @@ def _user_dict(u: User) -> dict:
         "username": u.username,
         "email": u.email,
         "has_password": bool(u.password_hash),
+        "password_status": _password_status(u),
         "telegram": u.telegram_id is not None,
         "advisory_ids": [a.id for a in u.advisories],
         "receives_report": u.receives_report,
@@ -196,11 +206,10 @@ def _apply_user(db: Session, u: User, body: UserIn) -> None:
     u.display_name = body.display_name.strip()
     u.username = body.username.strip().lower() if body.username else None
     u.email = body.email.strip().lower() if body.email else None
-    if body.password:
-        if len(body.password) < 8:
-            raise HTTPException(400, "Пароль — не короче 8 символов")
-        u.password_hash = hash_password(body.password)
-        u.revoke_sessions()  # старый пароль мог утечь — выходим со всех устройств
+    if not u.username and u.password_hash:
+        # Без логина войти по паролю нельзя — пароль больше не нужен
+        u.password_hash, u.must_change_password, u.temp_password_expires_at = None, False, None
+        u.revoke_sessions()
     if body.revoke_sessions:
         u.revoke_sessions()
     # Без автосброса: занятый логин должен всплыть в _commit_user как 409, а не здесь
@@ -230,8 +239,13 @@ def create_user(body: UserIn, db: Session = Depends(get_db), user: User = Depend
     u = User(role=body.role, display_name=body.display_name)
     db.add(u)
     _apply_user(db, u, body)
+    temp = issue_temp_password(u) if u.username else None
     _commit_user(db)
-    return _user_dict(u)
+    result = _user_dict(u)
+    if temp:
+        # Показывается администратору один раз, в базе хранится только хеш
+        result["temp_password"], result["temp_expires_at"] = temp[0], temp[1].isoformat()
+    return result
 
 
 @router.put("/admin/users/{user_id}")
@@ -249,6 +263,22 @@ def update_user(
         # Свои остальные сеансы завершены, а этот продолжает работать
         set_session_cookie(response, u)
     return _user_dict(u)
+
+
+@router.post("/admin/users/{user_id}/reset-password")
+def reset_password(user_id: int, db: Session = Depends(get_db), user: User = Depends(ADMIN)) -> dict:
+    """Выдать временный пароль (новому пользователю или тому, кто забыл свой)."""
+    u = db.get(User, user_id)
+    if u is None:
+        raise HTTPException(404, "Пользователь не найден")
+    if u.id == user.id:
+        raise HTTPException(400, "Свой пароль смените через «Сменить пароль»")
+    if not u.username:
+        raise HTTPException(400, "Сначала задайте пользователю логин")
+    password, expires = issue_temp_password(u)
+    audit.log(db, user, "password_reset", login=u.username)
+    db.commit()
+    return {"temp_password": password, "temp_expires_at": expires.isoformat(), "user": _user_dict(u)}
 
 
 @router.post("/admin/users/{user_id}/invite")

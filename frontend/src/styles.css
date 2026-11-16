@@ -1,44 +1,35 @@
+/* Палитра HTA. Только светлая тема: фирменный стиль светлый. */
 :root {
-  --bg: #f6f6f3;
-  --surface: #ffffff;
-  --surface-2: #f0f0ec;
-  --text: #1c1c1a;
-  --muted: #66665f;
-  --border: #dddcd5;
-  --accent: #1f6f5c;
-  --accent-text: #ffffff;
-  --danger: #b3261e;
-  --yellow: #fff3c4;
-  --yellow-edge: #e8c64a;
-  --green: #dcf2e3;
-  --green-edge: #5bb27a;
-  --orange: #ffe0c2;
-  --orange-edge: #e8893a;
-  --focus: #2b7de9;
-  --radius: 10px;
+  /* Фоны */
+  --bg: #f4f2ed; /* основной — тёплый, почти молочный */
+  --surface-2: #fbfaf7; /* дополнительный — кремово-белый */
+  --surface: #ffffff; /* карточки */
+  /* Текст и линии */
+  --text: #07172e; /* очень тёмный синий */
+  --muted: #5c6673; /* серо-синий */
+  --border: #dde1dc; /* светлый серо-зелёный */
+  --graphite: #57585a;
+  /* Фирменные */
+  --accent: #77bc4b; /* зелёный HTA: положительные действия */
+  --accent-hover: #6aab40;
+  /* На светло-зелёном белый текст плохо читается — тёмный */
+  --accent-text: #07172e;
+  /* Зелёный для текста и ссылок: #77BC4B на белом слишком бледный */
+  --accent-ink: #3e7a1f;
+  --orange-brand: #ff7e45; /* акцент */
+  --yellow-brand: #ffbb30; /* выделение и предупреждения */
+  --danger: #c2410c; /* текст ошибок: оранжевый, но читаемый на светлом */
+  /* Мягкие подложки статусов */
+  --green: #edf7e8;
+  --green-edge: #77bc4b;
+  --orange: #fff0e7;
+  --orange-edge: #ff7e45;
+  --yellow: #fff8dc;
+  --yellow-edge: #ffbb30;
+  --focus: #77bc4b;
+  --radius: 12px;
+  --shadow: 0 1px 2px rgba(7, 23, 46, 0.04), 0 2px 8px rgba(7, 23, 46, 0.04);
   color-scheme: light;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #161715;
-    --surface: #1f201e;
-    --surface-2: #2a2b28;
-    --text: #ecebe6;
-    --muted: #a3a29b;
-    --border: #3a3b37;
-    --accent: #4fb397;
-    --accent-text: #0e1a16;
-    --danger: #f2827a;
-    --yellow: #4a3f13;
-    --yellow-edge: #b8962a;
-    --green: #173d27;
-    --green-edge: #3d9a5f;
-    --orange: #4d2e14;
-    --orange-edge: #d27a30;
-    --focus: #6aa8ff;
-    color-scheme: dark;
-  }
 }
 
 * {
@@ -62,7 +53,21 @@ textarea {
 }
 
 a {
-  color: var(--accent);
+  color: var(--accent-ink);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: var(--text);
+}
+
+code {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1px 6px;
 }
 
 :focus-visible {
@@ -86,6 +91,7 @@ a {
   padding: 10px 16px;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
+  box-shadow: inset 0 3px 0 var(--accent); /* фирменная зелёная полоса сверху */
   position: sticky;
   top: 0;
   z-index: 5;
@@ -109,10 +115,14 @@ a {
   padding: 6px 10px;
   border-radius: 8px;
 }
+.topbar nav a:hover {
+  color: var(--text);
+}
 .topbar nav a.active {
-  background: var(--surface-2);
+  background: var(--green);
   color: var(--text);
   font-weight: 600;
+  box-shadow: inset 0 -2px 0 var(--accent);
 }
 
 .page {
@@ -146,8 +156,17 @@ a {
   color: var(--accent-text);
   font-weight: 600;
 }
+.btn.primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
 .btn.danger {
   color: var(--danger);
+  border-color: var(--orange-edge);
+  background: var(--orange);
+}
+.btn.danger:hover:not(:disabled) {
+  background: #ffe2d1;
 }
 .btn.small {
   padding: 4px 10px;
@@ -160,6 +179,12 @@ a {
   border-radius: 8px;
   padding: 8px 10px;
   width: 100%;
+}
+.input:focus,
+.kpp-search:focus {
+  border-color: var(--accent);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(119, 188, 75, 0.25);
 }
 
 .field {
@@ -176,6 +201,7 @@ a {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 16px;
+  box-shadow: var(--shadow);
 }
 
 .row {
@@ -211,7 +237,7 @@ table.list th {
   font-weight: 600;
   position: sticky;
   top: 0;
-  background: var(--surface);
+  background: var(--surface-2);
 }
 
 /* Цвета строк (раздел 5.5 ТЗ) */
@@ -268,12 +294,15 @@ table.list th {
 }
 .banner.ok {
   background: var(--green);
+  border-color: var(--green-edge);
 }
 .banner.early {
   background: var(--orange);
+  border-color: var(--orange-edge);
 }
 .banner.warn {
-  background: var(--orange);
+  background: var(--yellow);
+  border-color: var(--yellow-edge);
 }
 .banner.info {
   background: var(--surface-2);
@@ -313,7 +342,8 @@ table.list th {
   color: var(--text);
 }
 .offline {
-  background: var(--orange);
+  background: var(--yellow);
+  border: 1px solid var(--yellow-edge);
   padding: 8px 12px;
   border-radius: 8px;
 }

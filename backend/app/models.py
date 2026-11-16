@@ -98,6 +98,10 @@ class User(Base):
     active: Mapped[bool] = mapped_column(Boolean, default=True)
     # Номер в cookie сессии. Увеличение номера (смена пароля, «завершить сеансы») выкидывает все входы
     session_version: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    # Пароль выдан администратором как временный: до смены своим доступен только экран смены пароля
+    must_change_password: Mapped[bool] = mapped_column(Boolean, default=False, server_default=text("false"))
+    # До какого момента действует временный пароль
+    temp_password_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     def revoke_sessions(self) -> None:
         self.session_version = (self.session_version or 0) + 1

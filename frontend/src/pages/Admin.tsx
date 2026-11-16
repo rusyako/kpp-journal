@@ -31,6 +31,8 @@ interface User {
   username: string | null;
   email: string | null;
   has_password: boolean;
+  /** none — нет пароля, temp — выдан временный, expired — временный устарел, set — свой */
+  password_status: "none" | "temp" | "expired" | "set";
   telegram: boolean;
   advisory_ids: number[];
   receives_report: boolean;
@@ -43,6 +45,18 @@ interface ImportResult {
   warnings: string[];
   diff: Record<string, string[]> & { empty: boolean };
 }
+
+interface TempPassword {
+  temp_password: string;
+  temp_expires_at: string;
+}
+
+const PASSWORD_STATUS: Record<User["password_status"], string> = {
+  none: "",
+  temp: "⏳ ждёт смены пароля",
+  expired: "⌛ временный пароль устарел",
+  set: "🔒 свой пароль",
+};
 
 const ROLE_LABEL: Record<Role, string> = {
   admin: "Администратор",
@@ -367,13 +381,20 @@ function AdvisoriesTab() {
 
 // ---------- Пользователи и приглашения ----------
 
-function UserForm({ user, advisories, onDone }: { user: User | null; advisories: Advisory[]; onDone: () => void }) {
+function UserForm({
+  user,
+  advisories,
+  onDone,
+}: {
+  user: User | null;
+  advisories: Advisory[];
+  onDone: (saved?: User & Partial<TempPassword>) => void;
+}) {
   const [form, setForm] = useState({
     role: user?.role ?? ("advisor" as Role),
     display_name: user?.display_name ?? "",
     username: user?.username ?? "",
     email: user?.email ?? "",
-    password: "",
     advisory_ids: user?.advisory_ids ?? [],
     receives_report: user?.receives_report ?? false,
     active: user?.active ?? true,
@@ -390,11 +411,11 @@ function UserForm({ user, advisories, onDone }: { user: User | null; advisories:
     e.preventDefault();
     setError("");
     try {
-      await api(user ? `/api/admin/users/${user.id}` : "/api/admin/users", {
+      const saved = await api<User & Partial<TempPassword>>(user ? `/api/admin/users/${user.id}` : "/api/admin/users", {
         method: user ? "PUT" : "POST",
-        json: { ...form, username: form.username || null, email: form.email || null, password: form.password || null },
+        json: { ...form, username: form.username || null, email: form.email || null },
       });
-      onDone();
+      onDone(saved);
     } catch (err) {
       setError((err as Error).message);
     }
@@ -421,10 +442,14 @@ function UserForm({ user, advisories, onDone }: { user: User | null; advisories:
           <span>Логин (для входа с компьютера)</span>
           <input className="input" value={form.username} onChange={(e) => set("username", e.target.value)} autoComplete="off" />
         </label>
-        <label className="field">
-          <span>{user?.has_password ? "Новый пароль (пусто — не менять)" : "Пароль"}</span>
-          <input className="input" type="password" value={form.password} onChange={(e) => set("password", e.target.value)} autoComplete="new-password" />
-        </label>
+        <div className="field">
+          <span>Пароль</span>
+          <span className="muted">
+            {user
+              ? "Забыл пароль — «Сбросить пароль» в списке: снова будет временный Qwerty123!, свой человек придумает при входе."
+              : "С логином пользователь получит временный пароль Qwerty123!. При первом входе он придумает свой."}
+          </span>
+        </div>
         <label className="field">
           <span>Почта (для журнала действий)</span>
           <input className="input" type="email" value={form.email} onChange={(e) => set("email", e.target.value)} />
@@ -469,7 +494,7 @@ function UserForm({ user, advisories, onDone }: { user: User | null; advisories:
       </div>
       <div className="row">
         <button className="btn primary">{user ? "Сохранить" : "Создать"}</button>
-        <button type="button" className="btn" onClick={onDone}>
+        <button type="button" className="btn" onClick={() => onDone()}>
           Отмена
         </button>
         {error && <span className="error">{error}</span>}
@@ -482,6 +507,9 @@ function UsersTab() {
   const [users, setUsers] = useState<User[]>([]);
   const [editing, setEditing] = useState<User | "new" | null>(null);
   const [invite, setInvite] = useState<{ name: string; code: string; link: string | null } | null>(null);
+  const [temp, setTemp] = useState<(TempPassword & { name: string; username: string | null }) | null>(null);
+  const [error, setError] = useState("");
+  const me = useMe();
   const advisories = useAdvisories();
   const names = useMemo(() => new Map(advisories.list.map((a) => [a.id, a.name])), [advisories.list]);
 
@@ -493,6 +521,18 @@ function UsersTab() {
   const makeInvite = async (u: User) => {
     const r = await api<{ code: string; link: string | null }>(`/api/admin/users/${u.id}/invite`, { method: "POST" });
     setInvite({ name: u.display_name, ...r });
+  };
+
+  const issuePassword = async (u: User) => {
+    if (u.password_status === "set" && !window.confirm(`Сбросить пароль: ${u.display_name}? Его пароль перестанет работать, станет временный.`)) return;
+    setError("");
+    try {
+      const r = await api<TempPassword>(`/api/admin/users/${u.id}/reset-password`, { method: "POST" });
+      setTemp({ ...r, name: u.display_name, username: u.username });
+      load();
+    } catch (e) {
+      setError((e as Error).message);
+    }
   };
 
   return (
@@ -508,12 +548,34 @@ function UsersTab() {
           key={editing === "new" ? "new" : editing.id}
           user={editing === "new" ? null : editing}
           advisories={advisories.list}
-          onDone={() => {
+          onDone={(saved) => {
             setEditing(null);
+            if (saved?.temp_password && saved.temp_expires_at) {
+              setTemp({ temp_password: saved.temp_password, temp_expires_at: saved.temp_expires_at, name: saved.display_name, username: saved.username });
+            }
             load();
             advisories.reload();
           }}
         />
+      )}
+      {error && <div className="error">{error}</div>}
+      {temp && (
+        <div className="card" style={{ display: "grid", gap: 6 }}>
+          <b>Временный пароль для: {temp.name}</b>
+          <span>
+            Логин: <code>{temp.username}</code> · пароль: <code style={{ fontSize: 18 }}>{temp.temp_password}</code>
+          </span>
+          <span className="muted">
+            При первом входе система попросит придумать свой пароль. Временный действует до{" "}
+            {new Date(temp.temp_expires_at).toLocaleString("ru-RU", { dateStyle: "short", timeStyle: "short" })} — потом
+            нужно будет нажать «Сбросить пароль» ещё раз.
+          </span>
+          <div className="row">
+            <button className="btn small" onClick={() => setTemp(null)}>
+              Закрыть
+            </button>
+          </div>
+        </div>
       )}
       {invite && (
         <div className="card" style={{ display: "grid", gap: 6 }}>
@@ -559,7 +621,11 @@ function UsersTab() {
                 </td>
                 <td>{ROLE_LABEL[u.role]}</td>
                 <td>
-                  {[u.username && `логин ${u.username}`, u.telegram ? "Telegram ✅" : u.role === "advisor" ? "Telegram ❌" : ""]
+                  {[
+                    u.username && `логин ${u.username}`,
+                    u.username && PASSWORD_STATUS[u.password_status],
+                    u.telegram ? "Telegram ✅" : u.role === "advisor" ? "Telegram ❌" : "",
+                  ]
                     .filter(Boolean)
                     .join(" · ")}
                 </td>
@@ -571,6 +637,11 @@ function UsersTab() {
                   <button className="btn small" onClick={() => makeInvite(u)}>
                     Приглашение
                   </button>
+                  {u.username && u.id !== me.id && (
+                    <button className="btn small" onClick={() => issuePassword(u)}>
+                      {u.password_status === "none" ? "Выдать пароль" : "Сбросить пароль"}
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}

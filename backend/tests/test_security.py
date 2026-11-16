@@ -40,14 +40,16 @@ def _guard_body(**extra) -> dict:
     return {"role": "guard", "display_name": "Охрана", "username": "kpp", "email": "kpp@hta.kz", **extra}
 
 
-def test_password_change_ends_old_sessions(db, admin, guard):
+def test_password_reset_ends_old_sessions(db, admin, guard):
     assert guard.get("/api/me").status_code == 200
-    r = admin.put(f"/api/admin/users/{_guard_id(admin)}", json=_guard_body(password="new-password-1"))
+    r = admin.post(f"/api/admin/users/{_guard_id(admin)}/reset-password")
     assert r.status_code == 200
     assert guard.get("/api/me").status_code == 401
     fresh = TestClient(app)
-    assert fresh.post("/api/auth/login", json={"username": "kpp", "password": "new-password-1"}).status_code == 200
-    assert fresh.get("/api/me").status_code == 200
+    assert fresh.post("/api/auth/login", json={"username": "kpp", "password": r.json()["temp_password"]}).status_code == 200
+    assert fresh.get("/api/me").json()["must_change_password"] is True
+    # Старый пароль больше не подходит
+    assert TestClient(app).post("/api/auth/login", json={"username": "kpp", "password": PASSWORD}).status_code == 401
 
 
 def test_revoke_sessions_flag(db, admin, guard):
@@ -59,11 +61,10 @@ def test_revoke_sessions_flag(db, admin, guard):
     assert login("kpp").get("/api/me").status_code == 200
 
 
-def test_admin_changing_own_password_stays_logged_in(db, admin):
+def test_changing_own_password_keeps_this_session_only(db, admin):
     other_device = login("admin")
-    me = admin.get("/api/me").json()
-    body = {"role": "admin", "display_name": "Админ", "username": "admin", "password": "new-admin-pass"}
-    assert admin.put(f"/api/admin/users/{me['id']}", json=body).status_code == 200
+    r = admin.post("/api/auth/change-password", json={"current_password": PASSWORD, "new_password": "мой новый пароль"})
+    assert r.status_code == 200, r.text
     assert admin.get("/api/me").status_code == 200
     assert other_device.get("/api/me").status_code == 401
 

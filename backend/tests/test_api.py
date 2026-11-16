@@ -281,11 +281,10 @@ def test_p13_import_preview_and_apply(db, admin, advisor):
 
 
 def test_admin_users_and_health(db, admin):
-    r = admin.post("/api/admin/users", json={
-        "role": "guard", "display_name": "Охрана 2", "username": "KPP2", "password": "long-password",
-    })
+    r = admin.post("/api/admin/users", json={"role": "guard", "display_name": "Охрана 2", "username": "KPP2"})
     assert r.status_code == 200 and r.json()["username"] == "kpp2"
-    assert login_ok("kpp2", "long-password")
+    assert r.json()["password_status"] == "temp"
+    assert login_ok("kpp2", r.json()["temp_password"])
     assert admin.post("/api/admin/users", json={"role": "guard", "display_name": "X", "username": "kpp2"}).status_code == 409
 
     checks = {c["name"]: c for c in admin.get("/api/admin/health").json()}

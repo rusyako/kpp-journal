@@ -1,4 +1,5 @@
-from typing import Iterator
+from dataclasses import dataclass
+from typing import Iterator, Literal
 
 from fastapi import Depends, HTTPException, Request
 from sqlalchemy import select
@@ -7,8 +8,10 @@ from sqlalchemy.orm import Session
 from app import config, db as database
 from app.models import Role, User
 from app.services.auth import SESSION_COOKIE, read_session, validate_init_data
+from app.services.passwords import temp_password_expired
 
 TG_HEADER = "X-Telegram-Init-Data"
+MUST_CHANGE_PASSWORD = "Сначала смените временный пароль"
 
 
 def get_db() -> Iterator[Session]:
@@ -16,28 +19,56 @@ def get_db() -> Iterator[Session]:
         yield session
 
 
-def resolve_user(db: Session, init_data: str | None, session_token: str | None) -> User | None:
+@dataclass
+class Auth:
+    user: User
+    via: Literal["telegram", "password"]
+
+    @property
+    def needs_password_change(self) -> bool:
+        # Вход через Telegram пароль не использует — временный пароль его не ограничивает
+        return self.via == "password" and self.user.must_change_password
+
+
+def resolve_auth(db: Session, init_data: str | None, session_token: str | None) -> Auth | None:
     """Telegram Mini App присылает initData, браузер — cookie сессии."""
-    user = None
     if init_data:
         tg = validate_init_data(init_data, config.TELEGRAM_BOT_TOKEN)
         if tg and "id" in tg:
             user = db.scalar(select(User).where(User.telegram_id == int(tg["id"])))
-    if user is None and session_token:
+            if user is not None and user.active:
+                return Auth(user, "telegram")
+    if session_token:
         session = read_session(session_token)
         if session is not None:
             uid, version = session
             user = db.get(User, uid)
-            if user is not None and user.session_version != version:
-                user = None  # сеанс завершён: сменили пароль или нажали «Завершить сеансы»
-    return user if user is not None and user.active else None
+            # Номер не совпал — сеанс завершён: сменили пароль или нажали «Завершить сеансы»
+            if user is not None and user.active and user.session_version == version:
+                if temp_password_expired(user):
+                    return None
+                return Auth(user, "password")
+    return None
 
 
-def current_user(request: Request, db: Session = Depends(get_db)) -> User:
-    user = resolve_user(db, request.headers.get(TG_HEADER), request.cookies.get(SESSION_COOKIE))
-    if user is None:
+def resolve_user(db: Session, init_data: str | None, session_token: str | None) -> User | None:
+    """Пользователь с полным доступом (без незаменённого временного пароля)."""
+    auth = resolve_auth(db, init_data, session_token)
+    return auth.user if auth is not None and not auth.needs_password_change else None
+
+
+def current_auth(request: Request, db: Session = Depends(get_db)) -> Auth:
+    """Вход есть, даже если пароль ещё временный: только для /me и смены пароля."""
+    auth = resolve_auth(db, request.headers.get(TG_HEADER), request.cookies.get(SESSION_COOKIE))
+    if auth is None:
         raise HTTPException(401, "Нужно войти")
-    return user
+    return auth
+
+
+def current_user(auth: Auth = Depends(current_auth)) -> User:
+    if auth.needs_password_change:
+        raise HTTPException(403, MUST_CHANGE_PASSWORD)
+    return auth.user
 
 
 def require(*roles: Role):

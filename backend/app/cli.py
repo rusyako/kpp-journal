@@ -1,13 +1,12 @@
 """Служебные команды:
 
-    python -m app.cli create-admin <логин> "<Имя>"     # пароль спросит или возьмёт из ADMIN_PASSWORD
+    python -m app.cli create-admin <логин> "<Имя>"     # создаст админа с временным паролем Qwerty123!
+    python -m app.cli reset-password <логин>            # вернуть любому пользователю временный пароль
     python -m app.cli send-report [ГГГГ-ММ-ДД]
     python -m app.cli demo                             # вымышленные данные для проверки
 """
 
 import argparse
-import getpass
-import os
 from datetime import date
 
 from sqlalchemy import select
@@ -17,23 +16,40 @@ from app.db import SessionLocal
 from app.importer import StudentRow, apply_import
 from app.models import Advisory, Role, User
 from app.services.auth import hash_password
+from app.services.passwords import issue_temp_password
 from app.services.report import send_report
 
 
+def _print_temp(username: str, password: str, expires) -> None:
+    print(f"Логин: {username}")
+    print(f"Временный пароль: {password}")
+    print(f"Действует до {expires.strftime('%d.%m.%Y %H:%M')}. При входе система попросит придумать свой пароль.")
+
+
 def create_admin(username: str, name: str) -> None:
-    password = os.environ.get("ADMIN_PASSWORD") or getpass.getpass("Пароль: ")
-    if len(password) < 8:
-        raise SystemExit("Пароль — не короче 8 символов")
+    username = username.lower()
     with SessionLocal() as db:
-        user = db.scalar(select(User).where(User.username == username.lower()))
+        user = db.scalar(select(User).where(User.username == username))
         if user is None:
-            user = User(username=username.lower(), role=Role.ADMIN, display_name=name)
+            user = User(username=username, role=Role.ADMIN, display_name=name)
             db.add(user)
         user.role, user.display_name, user.active = Role.ADMIN, name, True
-        user.password_hash = hash_password(password)
-        user.revoke_sessions()
+        password, expires = issue_temp_password(user)
         db.commit()
     print(f"✅ Администратор {username} готов")
+    _print_temp(username, password, expires)
+
+
+def reset_password(username: str) -> None:
+    username = username.lower()
+    with SessionLocal() as db:
+        user = db.scalar(select(User).where(User.username == username))
+        if user is None:
+            raise SystemExit(f"Пользователь с логином {username} не найден")
+        user.active = True
+        password, expires = issue_temp_password(user)
+        db.commit()
+    _print_temp(username, password, expires)
 
 
 DEMO_STUDENTS = [
@@ -75,6 +91,8 @@ def main() -> None:
     p = sub.add_parser("create-admin")
     p.add_argument("username")
     p.add_argument("name")
+    p = sub.add_parser("reset-password")
+    p.add_argument("username")
     p = sub.add_parser("send-report")
     p.add_argument("day", nargs="?", type=date.fromisoformat)
     sub.add_parser("demo")
@@ -82,6 +100,8 @@ def main() -> None:
 
     if args.cmd == "create-admin":
         create_admin(args.username, args.name)
+    elif args.cmd == "reset-password":
+        reset_password(args.username)
     elif args.cmd == "send-report":
         with SessionLocal() as db:
             print(send_report(db, args.day or clock.today()))

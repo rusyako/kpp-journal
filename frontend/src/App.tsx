@@ -4,6 +4,7 @@ import { api, ApiError, type Me, type Role } from "./lib/api";
 import { webApp } from "./lib/telegram";
 import Admin from "./pages/Admin";
 import Advisor from "./pages/Advisor";
+import ChangePassword from "./pages/ChangePassword";
 import Kpp from "./pages/Kpp";
 import Login from "./pages/Login";
 import Reports from "./pages/Reports";
@@ -83,6 +84,15 @@ export default function App() {
     );
   }
 
+  if (me.must_change_password) {
+    // Временный пароль: пока не придумает свой, сервер ничего другого не отдаст
+    return (
+      <div className="page">
+        <ChangePassword forced username={me.username} onDone={load} onLogout={() => logout(load)} />
+      </div>
+    );
+  }
+
   const allow = (roles: Role[], el: ReactNode) => (roles.includes(me.role) ? el : <Navigate to={HOME[me.role]} replace />);
 
   return (
@@ -100,21 +110,25 @@ export default function App() {
   );
 }
 
+async function logout(reload: () => void): Promise<void> {
+  await api("/api/auth/logout", { method: "POST" }).catch(() => undefined);
+  try {
+    localStorage.removeItem(ME_CACHE);
+  } catch {
+    /* не критично */
+  }
+  reload();
+}
+
 export function TopBar({ title, children }: { title: string; children?: ReactNode }) {
   const me = useMe();
   const reload = useReloadMe();
   const navigate = useNavigate();
   const links = NAV.filter((n) => n.roles.includes(me.role));
 
-  const logout = async () => {
-    await api("/api/auth/logout", { method: "POST" }).catch(() => undefined);
-    try {
-      localStorage.removeItem(ME_CACHE);
-    } catch {
-      /* не критично */
-    }
+  const onLogout = async () => {
     navigate("/");
-    reload();
+    await logout(reload);
   };
 
   return (
@@ -133,7 +147,7 @@ export function TopBar({ title, children }: { title: string; children?: ReactNod
       {!webApp() && (
         <>
           <span className="muted hide-sm">{me.display_name}</span>
-          <button className="btn small" onClick={logout}>
+          <button className="btn small" onClick={onLogout}>
             Выйти
           </button>
         </>

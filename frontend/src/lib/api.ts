@@ -51,6 +51,10 @@ export interface Me {
   id: number;
   role: Role;
   display_name: string;
+  username: string | null;
+  has_password: boolean;
+  /** Вошёл с временным паролем: пока не сменит, доступен только экран смены пароля */
+  must_change_password: boolean;
   advisories: { id: number; name: string }[];
   today: string;
   working_day: boolean;
