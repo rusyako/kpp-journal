@@ -19,6 +19,8 @@ RUN pip install --no-cache-dir . && useradd --system --uid 1000 kpp
 COPY backend/alembic.ini ./
 COPY backend/alembic ./alembic
 COPY --from=web /src/frontend/dist ./static
+# Keep application files readable by kpp even when the checkout uses a restrictive umask.
+RUN chmod -R a+rX /app
 USER kpp
 EXPOSE 8000
 # Один воркер: в нём же работает расписание отчёта.
