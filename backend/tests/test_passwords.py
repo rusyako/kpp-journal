@@ -90,6 +90,17 @@ def test_new_password_must_differ_from_temp():
         check_new_password(user, "Qwerty123!", "Qwerty123!")
 
 
+@pytest.mark.parametrize(("password", "status"), [("River7!", 400), ("River7!x", 200), ("River7!xy", 200)])
+def test_new_password_minimum_eight_characters(db, admin, password, status):
+    client, _ = _temp_login(admin, "kpp")
+    response = client.post("/api/auth/change-password", json={"new_password": password})
+    assert response.status_code == status, response.text
+    if status == 400:
+        assert "не короче 8 символов" in response.json()["detail"]
+    else:
+        assert TestClient(app).post("/api/auth/login", json={"username": "kpp", "password": password}).status_code == 200
+
+
 def test_first_change_does_not_ask_temp_password_again(db, admin):
     client, _ = _temp_login(admin, "kpp")
     r = client.post("/api/auth/change-password", json={"new_password": "Охрана на посту 2026"})

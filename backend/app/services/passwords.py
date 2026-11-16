@@ -14,7 +14,7 @@ from app.models import User
 from app.services.auth import hash_password
 
 TEMP_PASSWORD_HOURS = 72
-MIN_LENGTH = 10
+MIN_LENGTH = 8
 MAX_LENGTH = 128
 
 # Пароли, которые подбирают первыми. Сравнение без учёта регистра.

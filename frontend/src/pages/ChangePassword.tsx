@@ -2,7 +2,7 @@ import { useState, type FormEvent } from "react";
 import { api } from "../lib/api";
 import PasswordInput from "../components/PasswordInput";
 
-export const MIN_PASSWORD_LENGTH = 10;
+export const MIN_PASSWORD_LENGTH = 8;
 
 /**
  * Смена пароля. forced — после входа с временным паролем: другого пути дальше нет.
